@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Home.css';
+import '../styles/HomeStyle.css';
 
 const recommendations = [
   {

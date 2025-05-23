@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import './AutoShopMap.css';
+import './ShopMap.css';
 
 function AutoShopMap({ keyword }) {
   useEffect(() => {

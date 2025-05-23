@@ -24,7 +24,7 @@
   text-align: center;
 }
 
-/* ✅ 모바일 기본: 세로 정렬 */
+/*  모바일 기본: 세로 정렬 */
 .nickname-section,
 .reservation-form {
   display: flex;
@@ -139,7 +139,7 @@ section li button:hover {
   border: 1px solid #e2dcd5;
 }
 
-/* ✅ 웹용: 가로 정렬로 전환 */
+/*  웹용: 가로 정렬로 전환 */
 @media (min-width: 768px) {
   .mypage-container {
     padding: 3rem;
