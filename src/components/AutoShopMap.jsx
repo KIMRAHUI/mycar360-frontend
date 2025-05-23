@@ -3,10 +3,14 @@ import { useEffect } from 'react';
 function AutoShopMap({ keyword }) {
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
+    console.log('✅ 현재 Kakao 앱 키:', kakaoKey);
     if (!kakaoKey) {
       console.error('❌ Kakao API Key가 설정되지 않았습니다.');
       return;
     }
+
+    
+
 
     // ✅ Kakao Map SDK 동적 삽입 (최초 1회만)
     if (!document.getElementById('kakao-map-script')) {
