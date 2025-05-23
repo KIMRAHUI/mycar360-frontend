@@ -12,17 +12,7 @@ function AutoShopMap({ keyword }) {
     
 
 
-    // ✅ Kakao Map SDK 동적 삽입 (최초 1회만)
-    if (!document.getElementById('kakao-map-script')) {
-      const script = document.createElement('script');
-      script.id = 'kakao-map-script';
-      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false&libraries=services`;
-      script.defer = true;
-      script.onload = () => {
-        console.log('✅ Kakao 지도 SDK 로드 완료');
-      };
-      document.head.appendChild(script);
-    }
+   
 
     // ✅ 지도 초기화 함수
     const initMap = () => {
