@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/history.css';
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 function History() {
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
@@ -43,7 +45,7 @@ function History() {
   }, [navigate]);
 
   const loadHistory = (carNum) => {
-    fetch(`http://localhost:5000/api/history/car/${carNum}`)
+    fetch(`${baseUrl}/api/history/car/${carNum}`)
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
@@ -80,8 +82,8 @@ function History() {
 
     const method = editId ? 'PUT' : 'POST';
     const url = editId
-      ? `http://localhost:5000/api/history/${editId}`
-      : `http://localhost:5000/api/history`;
+      ? `${baseUrl}/api/history/${editId}`
+      : `${baseUrl}/api/history`;
 
     const body = editId
       ? { ...form }
@@ -110,7 +112,7 @@ function History() {
 
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      fetch(`http://localhost:5000/api/history/${id}`, {
+      fetch(`${baseUrl}/api/history/${id}`, {
         method: 'DELETE'
       }).then(() => loadHistory(carNumber));
     }
@@ -220,4 +222,3 @@ function History() {
 }
 
 export default History;
-//
