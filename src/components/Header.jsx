@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Header.css';
+import './header.css';
 
 function Header() {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ function Header() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // 최초 로딩 시 user 상태 설정 + 0.5초 간격으로 localStorage 상태 동기화
+    //최초 로딩 시 user 상태 설정 + 0.5초 간격으로 localStorage 상태 동기화//
     const syncUser = () => {
       const stored = localStorage.getItem('car_user');
       setUser(stored ? JSON.parse(stored) : null);
