@@ -1,0 +1,7 @@
+/* styles/global.css */
+/* index.css 또는 global.css에 추가 */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+}
+
