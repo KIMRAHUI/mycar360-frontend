@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/Inspect.css';
+import '../styles/InspectStyle.css';
 
 function Inspection() {
   const [items, setItems] = useState([]);
