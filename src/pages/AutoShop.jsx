@@ -8,37 +8,19 @@ function AutoShop() {
   const keyword = searchParams.get('keyword') || '정비소';
 
   useEffect(() => {
-    const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
-
-    if (!kakaoKey) {
-      console.error('❌ Kakao API Key가 설정되지 않았습니다.');
-      return;
-    }
-
-    const existingScript = document.getElementById('kakao-map-script');
-    const kakaoSrc = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&libraries=services`;
-
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.id = 'kakao-map-script';
-      script.src = kakaoSrc;
-      script.async = true;
-      script.onload = () => setKakaoReady(true);
-      document.head.appendChild(script);
-    } else {
+  if (window.kakao && window.kakao.maps) {
+    setKakaoReady(true);
+  } else {
+    const check = setInterval(() => {
       if (window.kakao && window.kakao.maps) {
         setKakaoReady(true);
-      } else {
-        const check = setInterval(() => {
-          if (window.kakao && window.kakao.maps) {
-            setKakaoReady(true);
-            clearInterval(check);
-          }
-        }, 300);
-        return () => clearInterval(check);
+        clearInterval(check);
       }
-    }
-  }, []);
+    }, 300);
+    return () => clearInterval(check);
+  }
+}, []);
+
 
   return (
     <main className="auto-shop-page">
