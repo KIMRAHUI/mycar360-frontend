@@ -30,7 +30,7 @@ function Inspection() {
       sort,
       ...(category && { category }),
     };
-    axios.get('/inspection-items', { params })
+    axios.get('/api/inspection-items', { params })
       .then(res => {
         if (Array.isArray(res.data.items)) {
           setItems(res.data.items);
