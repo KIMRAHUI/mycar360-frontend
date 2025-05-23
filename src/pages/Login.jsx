@@ -16,8 +16,7 @@ function Login() {
 
   useEffect(() => {
     if (carNumber.length >= 6) {
-      axios
-        .get(`http://localhost:5000/api/vehicle-info/${carNumber}`)
+        axios.get(`/vehicle-info/${carNumber}`)
         .then(res => setVehicleInfo(res.data))
         .catch(() => setVehicleInfo(null));
     } else {

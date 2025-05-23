@@ -21,7 +21,7 @@ function MyPage() {
   const fetchFavorites = async (userId) => {
     try {
       console.log('🚀 찜 목록 요청 시작:', userId);
-      const res = await axios.get(`/api/favorites/${userId}`);
+      const res = await axios.get(`/favorites/${userId}`);
       console.log('✅ 응답 데이터:', res.data);
       setFavorites(res.data);
     } catch (err) {

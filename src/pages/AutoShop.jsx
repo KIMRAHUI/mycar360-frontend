@@ -7,37 +7,47 @@ function AutoShop() {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '정비소';
 
-useEffect(() => {
-  const existingScript = document.getElementById('kakao-map-script');
+  useEffect(() => {
+    const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
 
-  if (!existingScript) {
-    const script = document.createElement('script');
-    script.id = 'kakao-map-script';
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=117f04ed6e1ccf5235f5480b8f700e88&libraries=services`;
-    script.async = true;
-    script.onload = () => setKakaoReady(true);
-    document.head.appendChild(script);
-  } else {
-    if (window.kakao && window.kakao.maps) {
-      setKakaoReady(true);
-    } else {
-      const check = setInterval(() => {
-        if (window.kakao && window.kakao.maps) {
-          setKakaoReady(true);
-          clearInterval(check);
-        }
-      }, 300);
-      return () => clearInterval(check);
+    if (!kakaoKey) {
+      console.error('❌ Kakao API Key가 설정되지 않았습니다.');
+      return;
     }
-  }
-}, []);
 
+    const existingScript = document.getElementById('kakao-map-script');
+    const kakaoSrc = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&libraries=services`;
 
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-script';
+      script.src = kakaoSrc;
+      script.async = true;
+      script.onload = () => setKakaoReady(true);
+      document.head.appendChild(script);
+    } else {
+      if (window.kakao && window.kakao.maps) {
+        setKakaoReady(true);
+      } else {
+        const check = setInterval(() => {
+          if (window.kakao && window.kakao.maps) {
+            setKakaoReady(true);
+            clearInterval(check);
+          }
+        }, 300);
+        return () => clearInterval(check);
+      }
+    }
+  }, []);
 
   return (
     <main className="auto-shop-page">
       <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>📍 내 주변 정비소 찾기</h2>
-      {kakaoReady && <AutoShopMap keyword={keyword} />}
+      {kakaoReady ? (
+        <AutoShopMap keyword={keyword} />
+      ) : (
+        <p style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>지도를 불러오는 중...</p>
+      )}
     </main>
   );
 }
