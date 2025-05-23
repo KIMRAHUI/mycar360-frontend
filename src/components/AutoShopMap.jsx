@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import './AutoShopMap.css';
 
 function AutoShopMap({ keyword }) {
   useEffect(() => {
@@ -49,7 +50,7 @@ function AutoShopMap({ keyword }) {
       });
     };
 
-    // ✅ 스크립트 완전히 로드될 때까지 주기적으로 체크
+    //  스크립트 완전히 로드될 때까지 주기적으로 체크
     const interval = setInterval(() => {
       if (window.kakao && window.kakao.maps) {
         clearInterval(interval);
