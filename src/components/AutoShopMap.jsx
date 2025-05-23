@@ -2,6 +2,25 @@ import { useEffect } from 'react';
 
 function AutoShopMap({ keyword }) {
   useEffect(() => {
+    const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
+    if (!kakaoKey) {
+      console.error('❌ Kakao API Key가 설정되지 않았습니다.');
+      return;
+    }
+
+    // ✅ Kakao Map SDK 동적 삽입 (최초 1회만)
+    if (!document.getElementById('kakao-map-script')) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-script';
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false&libraries=services`;
+      script.async = true;
+      script.onload = () => {
+        console.log('✅ Kakao 지도 SDK 로드 완료');
+      };
+      document.head.appendChild(script);
+    }
+
+    // ✅ 지도 초기화 함수
     const initMap = () => {
       const container = document.getElementById('map');
       if (!container || !window.kakao || !window.kakao.maps) return;
@@ -49,11 +68,13 @@ function AutoShopMap({ keyword }) {
       });
     };
 
-    // ✅ 스크립트 완전히 로드될 때까지 주기적으로 체크
+    // ✅ SDK 로드 완료 시까지 주기적으로 확인 → 지도 생성
     const interval = setInterval(() => {
-      if (window.kakao && window.kakao.maps) {
+      if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
         clearInterval(interval);
-        initMap();
+        window.kakao.maps.load(() => {
+          initMap();
+        });
       }
     }, 300);
 
