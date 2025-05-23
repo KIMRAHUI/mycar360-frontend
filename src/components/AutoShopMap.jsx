@@ -17,7 +17,7 @@ function AutoShopMap({ keyword }) {
       const script = document.createElement('script');
       script.id = 'kakao-map-script';
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false&libraries=services`;
-      script.async = false;
+      script.defer = true;
       script.onload = () => {
         console.log('✅ Kakao 지도 SDK 로드 완료');
       };
