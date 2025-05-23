@@ -1,0 +1,10 @@
+/* src/styles/footer.css */
+
+.footer {
+  padding: 1rem;
+  background-color: #f4f4f4;
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+}
