@@ -1,13 +1,15 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   server: {
-    port: 5177, // 포트번호
-    proxy: {
-      '/api': 'http://localhost:5000'
-    }
+    port: 5177,
+    ...(mode === 'development' && {
+      proxy: {
+        '/api': 'http://localhost:5000',
+      }
+    })
   }
-})
+}));
