@@ -159,6 +159,14 @@
   color: #555;
 }
 
+.mobile-hint {
+  display: none;
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: -0.3rem;
+  padding-left: 0.2rem;
+}
+
 @media (max-width: 480px) {
   .history-container {
     padding: 1rem;
@@ -291,5 +299,9 @@
     margin: 0;
     padding: 0;
     scale: 1;
+  }
+
+  .mobile-hint {
+    display: block;
   }
 }

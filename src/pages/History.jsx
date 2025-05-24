@@ -146,6 +146,7 @@ function History() {
       <h2>정비 이력</h2>
 
       <form className="history-form" onSubmit={handleSubmit}>
+        <p className="mobile-hint">📅 점검일을 선택해주세요</p>
         <input
           type="date"
           name="date"
