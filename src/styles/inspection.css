@@ -192,7 +192,8 @@
   }
 
   .pagination button {
-    width: 100% !important;
+    width: 65%;
+    margin: 0 auto;
     font-size: 1rem;
     font-weight: bold;
     padding: 0.6rem 0;
