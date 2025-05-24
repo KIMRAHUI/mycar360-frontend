@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
-  const mapRef = useRef(null); //  지도 DOM 참조용
-  const mapInstanceRef = useRef(null); //  지도 인스턴스를 저장할 ref
+  const mapRef = useRef(null); // 지도 DOM 참조용
+  const mapInstanceRef = useRef(null); // 지도 인스턴스를 저장할 ref
 
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
@@ -71,7 +71,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
     }
   }, [keyword, onSelectShop]);
 
-  // 주소가 변경되면 지도 중심을 해당 좌표로 이동
+  // 주소가 변경되면 지도 중심 이동 + 마커 재검색
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
 
@@ -79,7 +79,39 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
     geocoder.addressSearch(searchAddress, (result, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
         const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-        mapInstanceRef.current.setCenter(coords); //지도 중심 이동
+        const map = mapInstanceRef.current;
+
+        map.setCenter(coords); // 지도 중심 이동
+
+        //  해당 위치 기준으로 정비소 마커 다시 검색
+        const ps = new window.kakao.maps.services.Places();
+        ps.keywordSearch(keyword, (data, status) => {
+          if (status !== window.kakao.maps.services.Status.OK) return;
+
+          data.slice(0, 5).forEach((place) => {
+            const marker = new window.kakao.maps.Marker({
+              map,
+              position: new window.kakao.maps.LatLng(place.y, place.x),
+            });
+
+            const content = `
+              <div style="padding:5px; font-size:13px;">
+                <b>${place.place_name}</b><br/>
+                ${place.phone ? `☎ ${place.phone}<br/>` : ''}
+                ${place.address_name || ''}
+              </div>
+            `;
+            const infowindow = new window.kakao.maps.InfoWindow({ content });
+            window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
+            window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+            window.kakao.maps.event.addListener(marker, 'click', () => {
+              if (onSelectShop) onSelectShop(place.place_name);
+            });
+          });
+        }, {
+          location: coords,
+          radius: 3000,
+        });
       }
     });
   }, [searchAddress]);
