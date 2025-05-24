@@ -9,12 +9,27 @@ function AutoShopMap({ keyword }) {
       return;
     }
 
-    
+   //  중복 방지 후 Kakao SDK 삽입
+    if (!document.getElementById('kakao-map-script')) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-script';
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&libraries=services&autoload=false`;
+      script.async = true;
+      script.onload = () => {
+        console.log('✅ Kakao 지도 SDK 로드 완료');
+        window.kakao.maps.load(() => {
+          initMap();
+        });
+      };
+      document.head.appendChild(script);
+    } else if (window.kakao?.maps) {
+      window.kakao.maps.load(() => {
+        initMap();
+      });
+    }
 
 
-   
-
-    // ✅ 지도 초기화 함수
+    //  지도 초기화 함수
     const initMap = () => {
       const container = document.getElementById('map');
       if (!container || !window.kakao || !window.kakao.maps) return;
