@@ -98,9 +98,9 @@
 .pagination {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 2rem;
-  flex-wrap: wrap;
 }
 
 .pagination button {
@@ -178,21 +178,22 @@
     grid-template-columns: 1fr;
   }
 
-  .pagination {
+   .pagination {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 2rem;
+    padding: 0 1rem;
   }
 
   .pagination button {
     flex: 0 0 calc(50% - 0.5rem);
-    text-align: center;
-    padding: 0.6rem 0;
-    font-size: 1rem;
+    max-width: calc(50% - 0.5rem);
+    padding: 0.5rem 0; 
+    font-size: 0.95rem;
     font-weight: bold;
-    border-radius: 10px;
+    border-radius: 8px;
+    text-align: center;
   }
 
   .modal-content {
