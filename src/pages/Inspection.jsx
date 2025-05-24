@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from '../api/axios';
@@ -48,34 +47,25 @@ function Inspection() {
   }, [page, category, sort]);
 
   useEffect(() => {
-  let temp = [...items];
+    let temp = [...items];
 
-  // 1. keyword로 필터링
-  if (keyword) {
-    temp = temp.filter(item =>
-      (item.title || '').toLowerCase().includes(keyword) ||
-      (item.summary || '').toLowerCase().includes(keyword) ||
-      (item.parts || '').toLowerCase().includes(keyword)
-    );
-  }
+    const safeStr = (value) => (value ?? '').toString().toLowerCase();
+    const searchTerm = keyword || search.toLowerCase();
 
-  // 2. search 입력값으로 추가 필터링
-  if (search.trim()) {
-    temp = temp.filter(item =>
-      (item.title || '').toLowerCase().includes(search.toLowerCase()) ||
-      (item.summary || '').toLowerCase().includes(search.toLowerCase())
-    );
-  }
+    if (searchTerm) {
+      temp = temp.filter(item =>
+        safeStr(item.title).includes(searchTerm) ||
+        safeStr(item.summary).includes(searchTerm) ||
+        safeStr(item.parts).includes(searchTerm)
+      );
+    }
 
-  // 3. category 필터링
-  if (category) {
-    temp = temp.filter(item => item.category === category);
-  }
+    if (category) {
+      temp = temp.filter(item => item.category === category);
+    }
 
-  setFiltered(temp);
-}, [search, keyword, category, items]);
-
-
+    setFiltered(temp);
+  }, [search, keyword, category, items]);
 
   useEffect(() => {
     if (userId) {
