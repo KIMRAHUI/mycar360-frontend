@@ -156,23 +156,62 @@
   cursor: pointer;
 }
 
-/* 📱 Responsive - 모바일 */
 @media (max-width: 480px) {
-    .search-input {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.7rem;
-    border-radius: 10px;
+  .search-input {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.9rem;
     max-width: 100%;
+    box-sizing: border-box;
   }
-  .card {
-    padding: 0.8rem;
+
+  .sort-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .category-buttons {
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .card-list {
+    grid-template-columns: 1fr; /* 카드 한 줄에 하나씩 */
+  }
+
+  .pagination {
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+
+  .pagination button {
+   flex: 0 0 auto;
+    font-size: 1rem;
+    min-width: 2.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px;
   }
 
   .modal-content {
     padding: 1.5rem;
   }
+}
 
-  .inspection-container {
-    padding: 1rem;
+
+/* 모바일에서 pagination 정렬 보정 */
+@media (max-width: 767px) {
+  .pagination {
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: nowrap; /* 버튼들이 줄 바꿈되지 않게 */
+  }
+
+  .pagination button {
+    min-width: 2.5rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
   }
 }

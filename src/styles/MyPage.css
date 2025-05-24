@@ -181,3 +181,36 @@ section li button:hover {
     font-size: 1rem;
   }
 }
+
+/* 📱 모바일 대응용: 767px 이하 (스마트폰용) */
+@media (max-width: 767px) {
+  .nickname-section,
+  .reservation-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .form-input,
+  .reservation-form button,
+  .nickname-section button {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  .form-input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+  }
+
+  .form-input[type="date"]::-webkit-calendar-picker-indicator {
+    padding: 0;
+    margin: 0;
+    scale: 1;
+  }
+}
