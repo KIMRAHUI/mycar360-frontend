@@ -167,12 +167,15 @@ function MyPage() {
       <section>
         <h3>📍 주변 정비소 추천 & 예약</h3>
         <div className="reservation-form">
-          <input
-            type="date"
-            className="form-input"
-            value={reservationDate}
-            onChange={(e) => setReservationDate(e.target.value)}
-          />
+          <div className="date-input-wrapper">
+            <label className="mobile-hint-label">📅 예약 날짜</label>
+            <input
+              type="date"
+              className="form-input"
+              value={reservationDate}
+              onChange={(e) => setReservationDate(e.target.value)}
+            />
+          </div>
           <input
             type="text"
             className="form-input"

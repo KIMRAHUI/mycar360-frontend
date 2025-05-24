@@ -148,6 +148,14 @@ section li button:hover {
   margin-bottom: 1rem;
   border: 1px solid #e2dcd5;
 }
+.mobile-hint-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: -0.3rem;
+  margin-left: 0.2rem;
+  display: none;
+}
+
 
 /* 768px 이상: 웹 전용 가로 정렬 레이아웃 */
 @media (min-width: 768px) {
@@ -213,5 +221,9 @@ section li button:hover {
     padding: 0;
     margin: 0;
     scale: 1;
+  }
+
+  .mobile-hint-label {
+    display: block;
   }
 }
