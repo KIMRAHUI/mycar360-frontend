@@ -1,4 +1,3 @@
-// ✅ MyPage.jsx 최종 통합본 (요청 내용만 반영, 나머지 기능은 그대로 유지)
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AutoShopMap from '../components/AutoShopMap';
@@ -11,8 +10,7 @@ function MyPage() {
   const [user, setUser] = useState(null);
   const [vehicle, setVehicle] = useState(null);
   const [nicknameInput, setNicknameInput] = useState('');
-  const [nextInspectionDate, setNextInspectionDate] = useState('');
-  const [nextInspectionItem, setNextInspectionItem] = useState('');
+  const [nextInspections, setNextInspections] = useState([]);
   const [reservationDate, setReservationDate] = useState('');
   const [reservationShop, setReservationShop] = useState('');
   const [reservations, setReservations] = useState([]);
@@ -35,6 +33,7 @@ function MyPage() {
       setNicknameInput(parsed.nickname);
       fetchVehicleInfo(parsed.carNumber);
       fetchFavorites(parsed.id);
+      fetchNextInspections(parsed.carNumber);
     } else {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
@@ -54,15 +53,6 @@ function MyPage() {
         return bDate - aDate;
       });
 
-      const latestItem = sortedHistory[0];
-      const latestDate = extractDateFromText(latestItem);
-      if (latestDate) {
-        const nextDate = new Date(latestDate);
-        nextDate.setMonth(nextDate.getMonth() + 6);
-        setNextInspectionDate(nextDate.toISOString().slice(0, 10));
-        setNextInspectionItem(latestItem);
-      }
-
       setVehicle({
         ...data,
         parsedParts: parts.slice(0, 3),
@@ -70,6 +60,17 @@ function MyPage() {
       });
     } catch (err) {
       console.error('차량 정보 불러오기 실패', err);
+    }
+  };
+
+  const fetchNextInspections = async (carNumber) => {
+    try {
+      const res = await axios.get(`/api/next-inspection/${carNumber}`);
+      if (res.data?.nextInspections) {
+        setNextInspections(res.data.nextInspections);
+      }
+    } catch (err) {
+      console.error('다음 점검 예측 실패:', err);
     }
   };
 
@@ -150,7 +151,17 @@ function MyPage() {
 
       <section>
         <h3>💡 다음 점검 예상 시기</h3>
-        <p>{nextInspectionDate ? `${nextInspectionDate} (${nextInspectionItem})` : '계산할 수 없습니다.'}</p>
+        {nextInspections.length > 0 ? (
+          <ul>
+            {nextInspections.map((item, idx) => (
+              <li key={idx}>
+                <strong>{item.title}</strong> → 마지막 점검: {item.last_date}, 주기: {item.recommended_cycle}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>예상 정보를 불러오는 중이거나, 점검 이력이 없습니다.</p>
+        )}
       </section>
 
       <section>
