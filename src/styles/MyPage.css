@@ -24,7 +24,7 @@
   text-align: center;
 }
 
-/* ✅ 모바일 기본: 세로 정렬 */
+/* 모바일 기본: 세로 정렬 */
 .nickname-section,
 .reservation-form {
   display: flex;
@@ -139,7 +139,26 @@ section li button:hover {
   border: 1px solid #e2dcd5;
 }
 
-/* ✅ 웹용: 가로 정렬로 전환 */
+/* ✅ 달력 아이콘 깨짐 방지 – 모든 화면에 공통 적용 */
+.reservation-form input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: white;
+  box-sizing: border-box;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.reservation-form input[type="date"]::-webkit-calendar-picker-indicator {
+  padding: 0;
+  margin: 0;
+  scale: 1;
+}
+
+/* 768px 이상: 웹 전용 가로 정렬 레이아웃 */
 @media (min-width: 768px) {
   .mypage-container {
     padding: 3rem;

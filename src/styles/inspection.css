@@ -23,6 +23,8 @@
   font-size: 1rem;
   width: 100%;
   max-width: 360px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .category-buttons {
@@ -156,10 +158,12 @@
 
 /* 📱 Responsive - 모바일 */
 @media (max-width: 480px) {
-  .search-input {
+    .search-input {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
     max-width: 100%;
   }
-
   .card {
     padding: 0.8rem;
   }

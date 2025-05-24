@@ -161,28 +161,100 @@
 
 @media (max-width: 480px) {
   .history-container {
-    padding: 1.2rem;
+    padding: 1rem;
+  }
+
+  .history-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+
+  .history-form input,
+  .history-form button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .history-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .history-controls input {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background: white;
+  }
+
+  /* ✅ 필터 전용 버튼만 타겟 */
+  .history-controls .filter-button {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background: white;
   }
 
   .timeline-item {
     padding: 1rem;
   }
 
-  .timeline-content .note {
+  .timeline-content {
     font-size: 0.9rem;
   }
 
-  .history-form input {
+  .timeline-content .note {
+    font-size: 0.85rem;
+  }
+
+  .timeline-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .timeline-actions button {
+    flex: 1 1 45%;
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pagination button {
     width: 100%;
   }
 
-  .history-form {
-    flex-direction: column;
-    align-items: stretch;
+  /* 모든 입력 필드에 통일된 스타일 적용 */
+  .history-form input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
   }
 
-  .history-controls {
-    flex-direction: column;
-    align-items: stretch;
+  /* 아이콘이 밀리거나 크기 튀는 현상 방지 */
+  .history-form input[type="date"]::-webkit-calendar-picker-indicator {
+    padding: 0;
+    margin: 0;
+    scale: 1;
   }
 }
+
