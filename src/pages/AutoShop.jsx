@@ -46,9 +46,12 @@ function AutoShop() {
       <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>📍 내 주변 정비소 찾기</h2>
 
       <div className="map-wrapper">
-        <button className="address-search-btn" onClick={openAddressSearch}>
-          🧭 주소 검색
-        </button>
+        <div className="map-controls">
+          <button className="address-search-btn" onClick={openAddressSearch}>
+            🧭 주소 검색
+          </button>
+        </div>
+
         {kakaoReady ? (
           <AutoShopMap keyword={keyword} />
         ) : (

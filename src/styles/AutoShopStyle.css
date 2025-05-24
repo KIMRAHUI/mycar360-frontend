@@ -3,6 +3,14 @@
   margin-bottom: 1rem;
 }
 
+.map-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .address-search-btn {
   background-color: #FFA07A;
   color: white;
@@ -11,7 +19,12 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.address-search-btn:hover {
+  background-color: #ff865c;
 }
 
 .current-location-btn {
@@ -25,7 +38,6 @@
   margin-left: 0.5rem;
 }
 
-
 .map-container {
   width: 100%;
   height: 400px;
@@ -33,21 +45,26 @@
   max-width: 700px;
 }
 
-
 @media (max-width: 480px) {
   .map-wrapper {
-    transform: scale(0.9);           
-    transform-origin: top center;    
+    transform: scale(0.9);
+    transform-origin: top center;
     padding: 0 0.5rem;
   }
 
+  .map-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .map-container {
-    height: 350px;                 
+    height: 350px;
   }
 
   .address-search-btn,
   .current-location-btn {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     padding: 0.5rem 1rem;
+    width: 80%;
   }
 }

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
-function AutoShopMap({ keyword = '정비소' }) {
+function AutoShopMap({ keyword = '정비소', onSelectShop }) {
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
     if (!kakaoKey) {
-      console.error('❌ Kakao API Key가 없습니다.');
+      console.error('Kakao API Key가 없습니다.');
       return;
     }
 
@@ -52,6 +52,9 @@ function AutoShopMap({ keyword = '정비소' }) {
               const infowindow = new window.kakao.maps.InfoWindow({ content });
               window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
               window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+              window.kakao.maps.event.addListener(marker, 'click', () => {
+                if (onSelectShop) onSelectShop(place.place_name);
+              });
             });
           }, {
             location: new window.kakao.maps.LatLng(latitude, longitude),
@@ -61,7 +64,7 @@ function AutoShopMap({ keyword = '정비소' }) {
         (err) => console.error('위치 정보 오류', err)
       );
     }
-  }, [keyword]);
+  }, [keyword, onSelectShop]);
 
   return (
     <div
