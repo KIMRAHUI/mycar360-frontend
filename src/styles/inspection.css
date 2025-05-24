@@ -205,16 +205,17 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.8rem;
     padding: 0.5rem 0;
   }
 
   .pagination button {
-    flex: 0 0 48%;
+    flex: 0 0 calc(50% - 0.5rem); /* 2개 버튼 한 줄에 배치 + gap 보정 */
+    max-width: calc(50% - 0.5rem);
+    padding: 0.5rem 0;
     font-size: 1rem;
     font-weight: bold;
-    padding: 0.6rem 0.5rem;
     border-radius: 10px;
+    text-align: center;
     box-sizing: border-box;
-  }
 }
