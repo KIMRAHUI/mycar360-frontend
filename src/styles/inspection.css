@@ -1,5 +1,3 @@
-
-
 .inspection-container {
   padding: 2rem;
   background-color: #fffdf8;
@@ -69,7 +67,7 @@
   border: 1px solid #ffd6c2;
   border-radius: 12px;
   padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -136,7 +134,7 @@
   border-radius: 16px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   color: #4b3f2f;
 }
 
@@ -156,7 +154,8 @@
   cursor: pointer;
 }
 
-@media (max-width: 480px) {
+/* ✅ 모바일 통합 반응형 처리 */
+@media (max-width: 767px) {
   .search-input {
     font-size: 0.95rem;
     padding: 0.6rem 0.9rem;
@@ -176,32 +175,9 @@
   }
 
   .card-list {
-    grid-template-columns: 1fr; /* 카드 한 줄에 하나씩 */
+    grid-template-columns: 1fr;
   }
 
-  .pagination {
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: nowrap;
-  }
-
-  .pagination button {
-   flex: 0 0 auto;
-    font-size: 1rem;
-    min-width: 2.4rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 10px;
-  }
-
-  .modal-content {
-    padding: 1.5rem;
-  }
-}
-
-
-/* 모바일에서 pagination 정렬 보정 */
-@media (max-width: 767px) {
-    @media (max-width: 767px) {
   .pagination {
     display: flex;
     flex-wrap: wrap;
@@ -211,13 +187,15 @@
   }
 
   .pagination button {
-    flex: 0 0 calc(50% - 0.5rem); /* 한 줄에 2개 들어오게 */
+    flex: 0 0 calc(50% - 0.5rem);
     text-align: center;
     padding: 0.6rem 0;
     font-size: 1rem;
     font-weight: bold;
     border-radius: 10px;
   }
-}
 
+  .modal-content {
+    padding: 1.5rem;
+  }
 }
