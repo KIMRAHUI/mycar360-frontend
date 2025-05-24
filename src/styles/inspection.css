@@ -187,10 +187,10 @@
   }
 
   .pagination button {
-    flex: 0 0 42%;   
-    max-width: 44%;
+    flex: 0 0 20%;   
+    max-width: 22%;
     padding: 0.5rem 0;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: bold;
     border-radius: 10px;
     text-align: center;
