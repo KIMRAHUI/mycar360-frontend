@@ -95,22 +95,21 @@
   cursor: pointer;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 2rem;
-}
+ .pagination {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 0.8rem;
+    padding: 1rem 0;
+  }
 
-.pagination button {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
+  .pagination button {
+    width: 100%;
+    padding: 0.7rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    text-align: center;
+  }
 
 .pagination button.active {
   background-color: #ffa07a;
