@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-function AutoShopMap({ keyword = '정비소', onSelectShop }) {
+function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
+  const mapRef = useRef(null); //  지도 DOM 참조용
+  const mapInstanceRef = useRef(null); //  지도 인스턴스를 저장할 ref
+
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
     if (!kakaoKey) {
@@ -31,6 +34,8 @@ function AutoShopMap({ keyword = '정비소', onSelectShop }) {
             center: new window.kakao.maps.LatLng(latitude, longitude),
             level: 4,
           });
+
+          mapInstanceRef.current = map; // 지도 인스턴스를 저장해둠
 
           const ps = new window.kakao.maps.services.Places();
           ps.keywordSearch(keyword, (data, status) => {
@@ -66,9 +71,23 @@ function AutoShopMap({ keyword = '정비소', onSelectShop }) {
     }
   }, [keyword, onSelectShop]);
 
+  // 주소가 변경되면 지도 중심을 해당 좌표로 이동
+  useEffect(() => {
+    if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
+
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    geocoder.addressSearch(searchAddress, (result, status) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+        mapInstanceRef.current.setCenter(coords); //지도 중심 이동
+      }
+    });
+  }, [searchAddress]);
+
   return (
     <div
       id="map"
+      ref={mapRef}
       style={{ width: '100%', height: '500px', marginTop: '1.5rem', borderRadius: '10px' }}
     />
   );

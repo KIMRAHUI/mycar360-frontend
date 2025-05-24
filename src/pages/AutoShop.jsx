@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AutoShopMap from '../components/AutoShopMap';
@@ -7,6 +6,7 @@ import '../styles/AutoShopStyle.css';
 function AutoShop() {
   const [kakaoReady, setKakaoReady] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(''); //주소 상태 추가
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '정비소';
 
@@ -37,6 +37,7 @@ function AutoShop() {
     new window.daum.Postcode({
       oncomplete: function (data) {
         alert(`선택한 주소: ${data.address}`);
+        setSelectedAddress(data.address); // 주소 저장 → 지도에 전달
       },
     }).open();
   };
@@ -53,7 +54,7 @@ function AutoShop() {
         </div>
 
         {kakaoReady ? (
-          <AutoShopMap keyword={keyword} />
+          <AutoShopMap keyword={keyword} searchAddress={selectedAddress} />
         ) : (
           <p style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>지도를 불러오는 중...</p>
         )}
