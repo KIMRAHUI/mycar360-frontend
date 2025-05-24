@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AutoShopMap from '../components/AutoShopMap';
 import axios from '../api/axios';
@@ -16,18 +16,10 @@ function MyPage() {
   const [reservations, setReservations] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  const mapRef = useRef(null);
-  const markersRef = useRef([]);
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
-
-
   const fetchFavorites = async (userId) => {
     try {
-      console.log('🚀 찜 목록 요청 시작:', userId);
       const res = await axios.get(`/api/favorites/${userId}`);
-      console.log('✅ 응답 데이터:', res.data);
-      setFavorites(res.data);
+      setFavorites(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('찜한 항목 불러오기 실패', err);
     }
@@ -37,14 +29,14 @@ function MyPage() {
     const saved = localStorage.getItem('car_user');
     if (saved) {
       const parsed = JSON.parse(saved);
-      console.log('✅ 파싱된 user:', parsed);
       setUser(parsed);
       setNicknameInput(parsed.nickname);
       fetchVehicleInfo(parsed.carNumber);
       fetchFavorites(parsed.id);
     } else {
       alert('로그인 후 이용해주세요!');
-      navigate('/login');9    }
+      navigate('/login');
+    }
   }, [location]);
 
   const fetchVehicleInfo = async (carNumber) => {
@@ -106,72 +98,6 @@ function MyPage() {
     setReservationShop('');
   };
 
-  // useEffect(() => {
-  // const script = document.createElement('script');
-  // script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=117f04ed6e1ccf5235f5480b8f700e88&libraries=services&autoload=false`;
-  // script.async = true;
-  // document.head.appendChild(script);
-
-  script.onload = () => {
-    window.kakao.maps.load(() => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const { latitude, longitude } = pos.coords;
-        const container = document.getElementById('map');
-        if (!container) return;
-
-        const map = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(latitude, longitude),
-          level: 4,
-        });
-        mapRef.current = map;
-
-        const ps = new window.kakao.maps.services.Places();
-        ps.keywordSearch('정비소', (data, status) => {
-          if (status === window.kakao.maps.services.Status.OK) {
-            markersRef.current.forEach(m => m.setMap(null));
-            markersRef.current = [];
-
-            data.slice(0, 3).forEach(place => {
-              const position = new window.kakao.maps.LatLng(place.y, place.x);
-
-              const marker = new window.kakao.maps.Marker({
-                map,
-                position,
-                image: new window.kakao.maps.MarkerImage(
-                  'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
-                  new window.kakao.maps.Size(36, 36)
-                ),
-              });
-
-              const content = `
-                <div style="padding:5px; font-size:13px;">
-                  <b>${place.place_name}</b><br/>
-                  ${place.phone ? `☎ ${place.phone}<br/>` : ''}
-                  ${place.category_name}
-                </div>
-              `;
-              const infowindow = new window.kakao.maps.InfoWindow({ content });
-
-              window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
-              window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
-              window.kakao.maps.event.addListener(marker, 'click', () => {
-                map.setCenter(position);
-                setReservationShop(place.place_name);
-              });
-
-              markersRef.current.push(marker);
-            });
-          }
-        }, {
-          location: new window.kakao.maps.LatLng(latitude, longitude),
-          radius: 3000,
-        });
-      });
-    });
-  };
-}, []);
-
-
   if (!user || !vehicle) return null;
 
   return (
@@ -188,7 +114,7 @@ function MyPage() {
 
       <section>
         <h3>🔧 최근 부품 교체 이력</h3>
-        {vehicle.parsedParts && vehicle.parsedParts.length > 0 ? (
+        {vehicle.parsedParts?.length > 0 ? (
           <ul>
             {vehicle.parsedParts.map((item, idx) => (
               <li key={idx}>{item}</li>
@@ -201,7 +127,7 @@ function MyPage() {
 
       <section>
         <h3>💪 최근 점검 이력</h3>
-        {vehicle.parsedHistory && vehicle.parsedHistory.length > 0 ? (
+        {vehicle.parsedHistory?.length > 0 ? (
           <ul>
             {vehicle.parsedHistory.map((item, idx) => (
               <li key={idx}>{item}</li>
@@ -234,11 +160,8 @@ function MyPage() {
           <button onClick={handleReservation}>예약하기</button>
         </div>
 
-         {/*  여기 지도 표시 */}
         <AutoShopMap keyword="정비소" />
-       
 
-        {/*  추가된 예약 내역 표시 */}
         <div style={{ marginTop: '1.5rem' }}>
           <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>📅 내 예약 목록</h4>
           {reservations.length > 0 ? (
@@ -253,18 +176,18 @@ function MyPage() {
         </div>
       </section>
 
-
-
       <section>
         <h3>❤️ 찜한 점검 항목</h3>
         {favorites.length > 0 ? (
-          <ul>
+          <div className="favorites-grid">
             {favorites.map((fav) => (
-              <li key={fav.inspection_item_id}>
-                [{fav.category}] {fav.title}
-              </li>
+              <div key={fav.inspection_item_id} className="favorite-card">
+                <p><strong>{fav.title}</strong></p>
+                <p>카테고리: {fav.category}</p>
+                <p>설명: {fav.description}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>찜한 항목이 없습니다.</p>
         )}
