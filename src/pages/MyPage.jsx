@@ -169,11 +169,13 @@ function MyPage() {
         <div className="reservation-form">
           <input
             type="date"
+            className="form-input"
             value={reservationDate}
             onChange={(e) => setReservationDate(e.target.value)}
           />
           <input
             type="text"
+            className="form-input"
             value={reservationShop}
             placeholder="마커 클릭 시 정비소명 자동 입력"
             onChange={(e) => setReservationShop(e.target.value)}
@@ -221,6 +223,7 @@ function MyPage() {
         <div className="nickname-section">
           <input
             type="text"
+            className="form-input"
             value={nicknameInput}
             onChange={(e) => setNicknameInput(e.target.value)}
           />

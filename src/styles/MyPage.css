@@ -24,6 +24,26 @@
   text-align: center;
 }
 
+/* ✅ 입력창 공통 스타일 */
+.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+/* ✅ 달력 아이콘 깨짐 방지 */
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  padding: 0;
+  margin: 0;
+  scale: 1;
+}
+
 /* 모바일 기본: 세로 정렬 */
 .nickname-section,
 .reservation-form {
@@ -31,16 +51,6 @@
   flex-direction: column;
   gap: 0.8rem;
   margin: 1.5rem 0;
-}
-
-.nickname-section input,
-.reservation-form input[type="date"],
-.reservation-form input[type="text"] {
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  width: 100%;
 }
 
 .nickname-section button,
@@ -139,25 +149,6 @@ section li button:hover {
   border: 1px solid #e2dcd5;
 }
 
-/* ✅ 달력 아이콘 깨짐 방지 – 모든 화면에 공통 적용 */
-.reservation-form input[type="date"] {
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: white;
-  box-sizing: border-box;
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  width: 100%;
-}
-
-.reservation-form input[type="date"]::-webkit-calendar-picker-indicator {
-  padding: 0;
-  margin: 0;
-  scale: 1;
-}
-
 /* 768px 이상: 웹 전용 가로 정렬 레이아웃 */
 @media (min-width: 768px) {
   .mypage-container {
@@ -170,9 +161,7 @@ section li button:hover {
     align-items: center;
   }
 
-  .nickname-section input,
-  .reservation-form input[type="date"],
-  .reservation-form input[type="text"] {
+  .form-input {
     flex: 1;
     min-width: 0;
   }
