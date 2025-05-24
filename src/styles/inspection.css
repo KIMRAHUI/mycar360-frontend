@@ -95,26 +95,31 @@
   cursor: pointer;
 }
 
- .pagination {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 0.8rem;
-    padding: 1rem 0;
-  }
+.pagination {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  padding: 1rem 0;
+  max-width: 400px;
+  margin: 0 auto;
+}
 
-  .pagination button {
-    width: 100%;
-    padding: 0.7rem 0;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    text-align: center;
-  }
+.pagination button {
+  width: 100%;
+  padding: 0.7rem 0;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
 
 .pagination button.active {
   background-color: #ffa07a;
   color: white;
-  font-weight: bold;
 }
 
 .modal-overlay {
@@ -153,22 +158,49 @@
   cursor: pointer;
 }
 
-/* 모바일 전용: 767px 이하 */
+/* ✅ 모바일: 767px 이하 대응 */
 @media (max-width: 767px) {
+  .search-input {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.9rem;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sort-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .category-buttons {
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .card-list {
+    grid-template-columns: 1fr;
+  }
+
   .pagination {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    justify-content: center;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.5rem;
     padding: 1rem 0;
+    max-width: 360px;
+    margin: 0 auto;
   }
 
   .pagination button {
-    width: 100%; /* 그리드 칸 전체 사용 */
+    width: 100% !important;
     font-size: 1rem;
     font-weight: bold;
     padding: 0.6rem 0;
     text-align: center;
     border-radius: 10px;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
   }
 }
