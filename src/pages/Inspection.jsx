@@ -48,20 +48,34 @@ function Inspection() {
   }, [page, category, sort]);
 
   useEffect(() => {
-    let temp = [...items];
-    if (keyword) {
-      temp = temp.filter(item =>
-        item.title.toLowerCase().includes(keyword) ||
-        item.summary?.toLowerCase().includes(keyword) ||
-        item.parts?.toLowerCase().includes(keyword)
-      );
-    } else if (search.trim()) {
-      temp = temp.filter(item =>
-        item.title.includes(search) || item.summary.includes(search)
-      );
-    }
-    setFiltered(temp);
-  }, [search, items, keyword]);
+  let temp = [...items];
+
+  // 1. keyword로 필터링
+  if (keyword) {
+    temp = temp.filter(item =>
+      (item.title || '').toLowerCase().includes(keyword) ||
+      (item.summary || '').toLowerCase().includes(keyword) ||
+      (item.parts || '').toLowerCase().includes(keyword)
+    );
+  }
+
+  // 2. search 입력값으로 추가 필터링
+  if (search.trim()) {
+    temp = temp.filter(item =>
+      (item.title || '').toLowerCase().includes(search.toLowerCase()) ||
+      (item.summary || '').toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  // 3. category 필터링
+  if (category) {
+    temp = temp.filter(item => item.category === category);
+  }
+
+  setFiltered(temp);
+}, [search, keyword, category, items]);
+
+
 
   useEffect(() => {
     if (userId) {
