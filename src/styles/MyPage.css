@@ -206,6 +206,7 @@ section li button:hover {
     border-radius: 10px;
     background-color: white;
     border: 1px solid #ddd;
+    height: 45px;
   }
 
   .form-input[type="date"]::-webkit-calendar-picker-indicator {

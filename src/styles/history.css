@@ -192,7 +192,7 @@
     background: white;
   }
 
-  /* ✅ 필터 전용 버튼만 타겟 */
+  /* 필터 전용 버튼만 타겟 */
   .history-controls .filter-button {
     width: 100%;
     font-size: 0.95rem;
@@ -275,6 +275,7 @@
     font-size: 1rem;
     padding: 0.75rem;
     box-sizing: border-box;
+    min-height: 48px;
   }
 
   .history-form input[type="date"] {
@@ -283,6 +284,7 @@
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 10px;
+    min-height: 48px;
   }
 
   .history-form input[type="date"]::-webkit-calendar-picker-indicator {
