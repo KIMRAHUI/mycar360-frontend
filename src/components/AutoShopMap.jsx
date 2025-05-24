@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import '../styles/autoShopMap.css';
 
 function AutoShopMap({ keyword = '정비소' }) {
   useEffect(() => {

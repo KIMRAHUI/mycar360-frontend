@@ -1,9 +1,12 @@
+
+
 .inspection-container {
   padding: 2rem;
   background-color: #fffdf8;
   min-height: 100vh;
   color: #4b3f2f;
   font-family: 'Pretendard', sans-serif;
+  box-sizing: border-box;
 }
 
 .inspection-controls {
@@ -13,16 +16,18 @@
   margin: 1rem 0 2rem;
 }
 
-.inspection-controls input {
+.search-input {
   padding: 0.7rem 1rem;
   border-radius: 12px;
   border: 1px solid #ccc;
   font-size: 1rem;
   width: 100%;
+  max-width: 360px;
 }
 
 .category-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -32,6 +37,11 @@
   padding: 0.6rem 1.2rem;
   border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-buttons button:hover {
+  background-color: #ffcca8;
 }
 
 .category-buttons .active {
@@ -39,10 +49,17 @@
   color: white;
 }
 
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .card-list {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .card {
@@ -62,6 +79,43 @@
 .card .category {
   font-size: 0.9rem;
   color: #888;
+  margin: 0.5rem 0;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pagination button.active {
+  background-color: #ffa07a;
+  color: white;
+  font-weight: bold;
 }
 
 .modal-overlay {
@@ -71,6 +125,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -86,6 +141,7 @@
 .modal-content .detail {
   margin-top: 1rem;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .modal-content button {
@@ -96,4 +152,23 @@
   border-radius: 10px;
   color: white;
   cursor: pointer;
+}
+
+/* 📱 Responsive - 모바일 */
+@media (max-width: 480px) {
+  .search-input {
+    max-width: 100%;
+  }
+
+  .card {
+    padding: 0.8rem;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+  }
+
+  .inspection-container {
+    padding: 1rem;
+  }
 }

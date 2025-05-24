@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from '../api/axios';;
+import axios from '../api/axios';
 import '../styles/inspection.css';
 
 function Inspection() {
@@ -96,6 +97,7 @@ function Inspection() {
         <input
           type="text"
           placeholder="점검 항목 검색..."
+          className="search-input"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />

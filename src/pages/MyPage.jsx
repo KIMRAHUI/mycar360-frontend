@@ -1,3 +1,4 @@
+// ✅ MyPage.jsx 최종 통합본 (요청 내용만 반영, 나머지 기능은 그대로 유지)
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AutoShopMap from '../components/AutoShopMap';
@@ -11,6 +12,7 @@ function MyPage() {
   const [vehicle, setVehicle] = useState(null);
   const [nicknameInput, setNicknameInput] = useState('');
   const [nextInspectionDate, setNextInspectionDate] = useState('');
+  const [nextInspectionItem, setNextInspectionItem] = useState('');
   const [reservationDate, setReservationDate] = useState('');
   const [reservationShop, setReservationShop] = useState('');
   const [reservations, setReservations] = useState([]);
@@ -52,11 +54,13 @@ function MyPage() {
         return bDate - aDate;
       });
 
-      const latestDate = extractDateFromText(sortedHistory[0]);
+      const latestItem = sortedHistory[0];
+      const latestDate = extractDateFromText(latestItem);
       if (latestDate) {
         const nextDate = new Date(latestDate);
         nextDate.setMonth(nextDate.getMonth() + 6);
         setNextInspectionDate(nextDate.toISOString().slice(0, 10));
+        setNextInspectionItem(latestItem);
       }
 
       setVehicle({
@@ -96,6 +100,12 @@ function MyPage() {
     setReservations([...reservations, newEntry]);
     setReservationDate('');
     setReservationShop('');
+  };
+
+  const deleteReservation = (idx) => {
+    const newList = [...reservations];
+    newList.splice(idx, 1);
+    setReservations(newList);
   };
 
   if (!user || !vehicle) return null;
@@ -140,7 +150,7 @@ function MyPage() {
 
       <section>
         <h3>💡 다음 점검 예상 시기</h3>
-        <p>{nextInspectionDate || '계산할 수 없습니다.'}</p>
+        <p>{nextInspectionDate ? `${nextInspectionDate} (${nextInspectionItem})` : '계산할 수 없습니다.'}</p>
       </section>
 
       <section>
@@ -160,14 +170,16 @@ function MyPage() {
           <button onClick={handleReservation}>예약하기</button>
         </div>
 
-        <AutoShopMap keyword="정비소" />
+        <AutoShopMap keyword="정비소" onSelectShop={(shop) => setReservationShop(shop)} />
 
         <div style={{ marginTop: '1.5rem' }}>
           <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>📅 내 예약 목록</h4>
           {reservations.length > 0 ? (
             <ul>
               {reservations.map((entry, idx) => (
-                <li key={idx} style={{ padding: '0.4rem 0' }}>{entry}</li>
+                <li key={idx} style={{ padding: '0.4rem 0' }}>
+                  {entry} <button onClick={() => deleteReservation(idx)}>❌</button>
+                </li>
               ))}
             </ul>
           ) : (
