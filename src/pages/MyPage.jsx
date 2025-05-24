@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from '../api/axios';;
+import AutoShopMap from '../components/AutoShopMap';
+import axios from '../api/axios';
 import '../styles/MyPage.css';
 
 function MyPage() {
@@ -105,11 +106,11 @@ function MyPage() {
     setReservationShop('');
   };
 
-  useEffect(() => {
-  const script = document.createElement('script');
-  script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=117f04ed6e1ccf5235f5480b8f700e88&libraries=services&autoload=false`;
-  script.async = true;
-  document.head.appendChild(script);
+  // useEffect(() => {
+  // const script = document.createElement('script');
+  // script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=117f04ed6e1ccf5235f5480b8f700e88&libraries=services&autoload=false`;
+  // script.async = true;
+  // document.head.appendChild(script);
 
   script.onload = () => {
     window.kakao.maps.load(() => {
@@ -233,9 +234,11 @@ function MyPage() {
           <button onClick={handleReservation}>예약하기</button>
         </div>
 
-        <div id="map" style={{ width: '100%', height: '300px', marginTop: '1rem' }} />
+         {/*  여기 지도 표시 */}
+        <AutoShopMap keyword="정비소" />
+       
 
-        {/* ✅ 추가된 예약 내역 표시 */}
+        {/*  추가된 예약 내역 표시 */}
         <div style={{ marginTop: '1.5rem' }}>
           <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>📅 내 예약 목록</h4>
           {reservations.length > 0 ? (
