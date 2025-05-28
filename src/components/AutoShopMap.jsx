@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import '../styles/AutoShopMap.css';
+
 
 function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
   const mapRef = useRef(null); // 지도 DOM 참조용
@@ -118,10 +120,9 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
 
   return (
     <div
-      id="map"
-      ref={mapRef}
-      style={{ width: '100%', height: '500px', marginTop: '1.5rem', borderRadius: '10px' }}
-    />
+  id="map"
+  ref={mapRef}
+/>
   );
 }
 

@@ -1,0 +1,12 @@
+/* src/styles/AutoShopMap.css */
+
+#map {
+  width: 100%;
+  height: 500px;
+  margin-top: 1.5rem;
+  border-radius: 10px;
+
+  /*모바일에서 마커가 안 보이는 현상 방지용 */
+  position: relative;
+  z-index: 0;
+}
