@@ -5,6 +5,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const hasInitializedRef = useRef(false); // ✅ 이미 초기화했는지 여부 체크
 
   function clearMarkers() {
     markersRef.current.forEach(marker => marker.setMap(null));
@@ -31,6 +32,9 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
     }
 
     function initMap() {
+      if (hasInitializedRef.current) return; 
+      hasInitializedRef.current = true;
+
       const container = document.getElementById('map');
       if (!container || !window.kakao) return;
 
