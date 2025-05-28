@@ -108,4 +108,4 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '' }
   );
 }
 
-export default AutoShopMap;
+export default AutoShopMap; //
