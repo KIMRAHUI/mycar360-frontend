@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import '../styles/AutoShopMap.css';
 
-function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '' }) {
+function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', enableDynamicSearch = false }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -44,13 +44,20 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '' }
 
           mapInstanceRef.current = map;
           renderMarkers(map, new window.kakao.maps.LatLng(latitude, longitude));
+
+          if (enableDynamicSearch) {
+            window.kakao.maps.event.addListener(map, 'idle', () => {
+              const center = map.getCenter();
+              renderMarkers(map, center);
+            });
+          }
         },
         (err) => {
           console.error('위치 정보 오류', err);
         }
       );
     }
-  }, [keyword, onSelectShop]);
+  }, [keyword, onSelectShop, enableDynamicSearch]);
 
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
@@ -108,4 +115,4 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '' }
   );
 }
 
-export default AutoShopMap; //
+export default AutoShopMap;

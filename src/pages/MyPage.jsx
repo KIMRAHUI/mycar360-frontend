@@ -186,8 +186,11 @@ function MyPage() {
           <button onClick={handleReservation}>예약하기</button>
         </div>
 
-       <AutoShopMap keyword="정비소" onSelectShop={(shop) => setReservationShop(shop)} />
-
+        <AutoShopMap
+          keyword="정비소"
+          onSelectShop={(shop) => setReservationShop(shop)}
+          enableDynamicSearch={true}
+        />
 
 
         <div style={{ marginTop: '1.5rem' }}>
