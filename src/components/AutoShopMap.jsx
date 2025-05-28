@@ -24,53 +24,55 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
     } else if (window.kakao?.maps) {
       window.kakao.maps.load(initMap);
     }
-
     function initMap() {
-      const container = document.getElementById('map');
-      if (!container || !window.kakao) return;
+  const container = document.getElementById('map');
+  if (!container || !window.kakao) return;
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const map = new window.kakao.maps.Map(container, {
-            center: new window.kakao.maps.LatLng(latitude, longitude),
-            level: 4,
-          });
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const map = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(latitude, longitude),
+        level: 4,
+      });
 
-          mapInstanceRef.current = map; // 지도 인스턴스를 저장해둠
+      mapInstanceRef.current = map;
 
-          const ps = new window.kakao.maps.services.Places();
-          ps.keywordSearch(keyword, (data, status) => {
-            if (status !== window.kakao.maps.services.Status.OK) return;
+      // ✅ 지도 로딩 완료 후 마커 추가 (모바일 마커 문제 해결)
+      window.kakao.maps.event.addListener(map, 'idle', () => {
+        const ps = new window.kakao.maps.services.Places();
+        ps.keywordSearch(keyword, (data, status) => {
+          if (status !== window.kakao.maps.services.Status.OK) return;
 
-            data.slice(0, 5).forEach((place) => {
-              const marker = new window.kakao.maps.Marker({
-                map,
-                position: new window.kakao.maps.LatLng(place.y, place.x),
-              });
-
-              const content = `
-                <div style="padding:5px; font-size:13px;">
-                  <b>${place.place_name}</b><br/>
-                  ${place.phone ? `☎ ${place.phone}<br/>` : ''}
-                  ${place.address_name || ''}
-                </div>
-              `;
-              const infowindow = new window.kakao.maps.InfoWindow({ content });
-              window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
-              window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
-              window.kakao.maps.event.addListener(marker, 'click', () => {
-                if (onSelectShop) onSelectShop(place.place_name);
-              });
+          data.slice(0, 5).forEach((place) => {
+            const marker = new window.kakao.maps.Marker({
+              map,
+              position: new window.kakao.maps.LatLng(place.y, place.x),
             });
-          }, {
-            location: new window.kakao.maps.LatLng(latitude, longitude),
-            radius: 3000,
+
+            const content = `
+              <div style="padding:5px; font-size:13px;">
+                <b>${place.place_name}</b><br/>
+                ${place.phone ? `☎ ${place.phone}<br/>` : ''}
+                ${place.address_name || ''}
+              </div>
+            `;
+            const infowindow = new window.kakao.maps.InfoWindow({ content });
+            window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
+            window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+            window.kakao.maps.event.addListener(marker, 'click', () => {
+              if (onSelectShop) onSelectShop(place.place_name);
+            });
           });
-        },
-        (err) => console.error('위치 정보 오류', err)
-      );
-    }
+        }, {
+          location: new window.kakao.maps.LatLng(latitude, longitude),
+          radius: 3000,
+        });
+      });
+    },
+    (err) => console.error('위치 정보 오류', err)
+  );
+}
   }, [keyword, onSelectShop]);
 
   // 주소가 변경되면 지도 중심 이동 + 마커 재검색
