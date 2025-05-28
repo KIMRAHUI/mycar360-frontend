@@ -186,7 +186,8 @@ function MyPage() {
           <button onClick={handleReservation}>예약하기</button>
         </div>
 
-        <AutoShopMap keyword="정비소" onSelectShop={(shop) => setReservationShop(shop)} />
+       <AutoShopMap key={user?.carNumber} keyword="정비소" onSelectShop={(shop) => setReservationShop(shop)} />
+
 
         <div style={{ marginTop: '1.5rem' }}>
           <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>📅 내 예약 목록</h4>
