@@ -1,10 +1,15 @@
 import { useEffect, useRef } from 'react';
 import '../styles/AutoShopMap.css';
 
-
 function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
-  const mapRef = useRef(null); // 지도 DOM 참조용
-  const mapInstanceRef = useRef(null); // 지도 인스턴스를 저장할 ref
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+
+  function clearMarkers() {
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+  }
 
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
@@ -24,58 +29,60 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
     } else if (window.kakao?.maps) {
       window.kakao.maps.load(initMap);
     }
+
     function initMap() {
-  const container = document.getElementById('map');
-  if (!container || !window.kakao) return;
+      const container = document.getElementById('map');
+      if (!container || !window.kakao) return;
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const map = new window.kakao.maps.Map(container, {
-        center: new window.kakao.maps.LatLng(latitude, longitude),
-        level: 4,
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const map = new window.kakao.maps.Map(container, {
+            center: new window.kakao.maps.LatLng(latitude, longitude),
+            level: 4,
+          });
 
-      mapInstanceRef.current = map;
+          mapInstanceRef.current = map;
 
-      // ✅ 지도 로딩 완료 후 마커 추가 (모바일 마커 문제 해결)
-      window.kakao.maps.event.addListener(map, 'idle', () => {
-        const ps = new window.kakao.maps.services.Places();
-        ps.keywordSearch(keyword, (data, status) => {
-          if (status !== window.kakao.maps.services.Status.OK) return;
+          window.kakao.maps.event.addListener(map, 'idle', () => {
+            clearMarkers();
+            const ps = new window.kakao.maps.services.Places();
+            ps.keywordSearch(keyword, (data, status) => {
+              if (status !== window.kakao.maps.services.Status.OK) return;
 
-          data.slice(0, 5).forEach((place) => {
-            const marker = new window.kakao.maps.Marker({
-              map,
-              position: new window.kakao.maps.LatLng(place.y, place.x),
-            });
+              data.slice(0, 5).forEach((place) => {
+                const marker = new window.kakao.maps.Marker({
+                  map,
+                  position: new window.kakao.maps.LatLng(place.y, place.x),
+                });
 
-            const content = `
-              <div style="padding:5px; font-size:13px;">
-                <b>${place.place_name}</b><br/>
-                ${place.phone ? `☎ ${place.phone}<br/>` : ''}
-                ${place.address_name || ''}
-              </div>
-            `;
-            const infowindow = new window.kakao.maps.InfoWindow({ content });
-            window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
-            window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
-            window.kakao.maps.event.addListener(marker, 'click', () => {
-              if (onSelectShop) onSelectShop(place.place_name);
+                markersRef.current.push(marker);
+
+                const content = `
+                  <div style="padding:5px; font-size:13px;">
+                    <b>${place.place_name}</b><br/>
+                    ${place.phone ? `☎ ${place.phone}<br/>` : ''}
+                    ${place.address_name || ''}
+                  </div>
+                `;
+                const infowindow = new window.kakao.maps.InfoWindow({ content });
+                window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
+                window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+                window.kakao.maps.event.addListener(marker, 'click', () => {
+                  if (onSelectShop) onSelectShop(place.place_name);
+                });
+              });
+            }, {
+              location: new window.kakao.maps.LatLng(latitude, longitude),
+              radius: 3000,
             });
           });
-        }, {
-          location: new window.kakao.maps.LatLng(latitude, longitude),
-          radius: 3000,
-        });
-      });
-    },
-    (err) => console.error('위치 정보 오류', err)
-  );
-}
+        },
+        (err) => console.error('위치 정보 오류', err)
+      );
+    }
   }, [keyword, onSelectShop]);
 
-  // 주소가 변경되면 지도 중심 이동 + 마커 재검색
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
 
@@ -85,9 +92,9 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
         const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
         const map = mapInstanceRef.current;
 
-        map.setCenter(coords); // 지도 중심 이동
+        map.setCenter(coords);
 
-        //  해당 위치 기준으로 정비소 마커 다시 검색
+        clearMarkers();
         const ps = new window.kakao.maps.services.Places();
         ps.keywordSearch(keyword, (data, status) => {
           if (status !== window.kakao.maps.services.Status.OK) return;
@@ -97,6 +104,8 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
               map,
               position: new window.kakao.maps.LatLng(place.y, place.x),
             });
+
+            markersRef.current.push(marker);
 
             const content = `
               <div style="padding:5px; font-size:13px;">
@@ -122,9 +131,9 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress }) {
 
   return (
     <div
-  id="map"
-  ref={mapRef}
-/>
+      id="map"
+      ref={mapRef}
+    />
   );
 }
 
