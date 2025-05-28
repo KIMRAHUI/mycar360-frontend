@@ -1,12 +1,59 @@
-# React + Vite
+# MyCar360 – 내 차량 점검 도우미
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MyCar360은 사용자가 차량 점검 이력 및 추천 항목을 관리하고, 정비소 예약까지 가능한 360도 차량 진단 웹 애플리케이션입니다. Kakao API와 Supabase 기반의 데이터 관리로 실시간 사용자 맞춤 경험을 제공합니다.
 
-Currently, two official plugins are available:
+## 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✅ 홈 (Home)
+- 360도 차량 이미지 업로드 및 진단 애니메이션 표시
+- 계절별 점검 추천 안내
+- 차량 상태 검색 기능: 부품/정비소 이름 입력 시 자동 검색
 
-## Expanding the ESLint configuration
+### ✅ 점검하기 (Inspection)
+- 부품별 점검 항목 검색 및 필터링 (장르처럼)
+- 주기, 필요 부품, 예상 비용 등 상세 정보 모달 제공
+- 찜(하트) 기능 포함 (로그인 사용자 전용)
+- 페이지네이션 및 정렬 기능 포함
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### ✅ 정비소 찾기 (AutoShop)
+- Kakao 지도 API 기반 정비소 위치 표시
+- 주소 검색 기능 제공
+- 지도 마커 클릭 시 예약 폼 자동 채움
+
+### ✅ 점검 이력 (History)
+- 차량 번호 기반의 이력 데이터 자동 조회
+- 날짜, 항목, 정비소, 메모 등 확인 가능
+- 이력은 Supabase DB에서 관리
+
+### ✅ 마이페이지 (MyPage)
+- 로그인 사용자 정보 표시
+- 찜한 항목, 정비소 예약, 점검 이력 확인
+- 다음 점검 예상 항목 및 날짜 예측 기능
+- Kakao 로그인/로그아웃 상태 반영
+
+---
+
+## 기술 스택
+
+| 구분 | 사용 기술 |
+|------|------------|
+| 프론트엔드 | React, Vite, React Router, Axios |
+| 백엔드 API | Express.js, Supabase (PostgreSQL) |
+| 로그인 | Kakao OAuth 로그인 |
+| 지도 서비스 | Kakao Map API |
+| 배포 | Vercel (프론트), Render (백엔드) |
+
+---
+
+## 실행 방법
+
+```bash
+# 1. 저장소 클론
+git clone https://github.com/KIMRAHUI/mycar360.git
+cd mycar360
+
+# 2. 의존성 설치
+npm install
+
+# 3. 개발 서버 실행
+npm run dev
