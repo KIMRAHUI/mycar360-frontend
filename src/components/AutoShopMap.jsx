@@ -13,6 +13,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
     markersRef.current = [];
   }
 
+  // 초기 지도 생성 및 위치 기반 마커 생성
   useEffect(() => {
     const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
     if (!kakaoKey) {
@@ -64,6 +65,14 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
     }
   }, [keyword, onSelectShop, enableDynamicSearch]);
 
+  // selectedMarker 변경시 마커 다시 렌더링
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      renderMarkers(mapInstanceRef.current, mapInstanceRef.current.getCenter());
+    }
+  }, [keyword, selectedMarker]);
+
+  // 주소 검색시 중심 이동 및 마커 재렌더링
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
 
@@ -109,7 +118,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
         window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
         window.kakao.maps.event.addListener(marker, 'click', () => {
           infowindow.open(map, marker);
-          setSelectedMarker({ id: place.id }); 
+          setSelectedMarker({ id: place.id });
           if (onSelectShop) onSelectShop(place.place_name);
         });
       });
@@ -131,7 +140,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
   }
 
   return (
-    <div id="map" ref={mapRef} />
+    <div id="map" ref={mapRef} style={{ width: '100%', height: '500px' }} />
   );
 }
 
