@@ -6,7 +6,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const hasInitializedRef = useRef(false);
-  const [selectedMarker, setSelectedMarker] = useState(null); // ✅ 클릭된 마커 상태
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   function clearMarkers() {
     markersRef.current.forEach(({ marker }) => marker.setMap(null));
