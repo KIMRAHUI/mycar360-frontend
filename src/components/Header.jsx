@@ -4,7 +4,7 @@ function Header({ user, setUser }) {
 
   const handleLogout = () => {
     localStorage.clear();
-    setUser(null);      // 로그인 상태 초기화
+    setUser(null);      // 로그인 상태 초기화//
     navigate('/');
   };
 
