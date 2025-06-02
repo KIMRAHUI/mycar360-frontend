@@ -26,21 +26,8 @@ function MyPage() {
     }
   };
 
-  const handleDeleteFavorite = async (itemId) => {
-    if (!user?.id) {
-      alert('로그인 후 이용해주세요.');
-      return;
-    }
-    try {
-      await axios.delete(`/api/favorites/${itemId}`, {
-        params: { user_id: user.id }
-      });
-      setFavorites(prev => prev.filter(fav => fav.inspection_item_id !== itemId));
-    } catch (err) {
-      console.error('❌ 찜 항목 삭제 실패:', err);
-      alert('삭제에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
+  // 삭제 기능은 제거, 버튼도 렌더링 안함
+  // 필요 시 백엔드 삭제 API 호출 부분도 제거해주세요
 
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
@@ -145,6 +132,15 @@ function MyPage() {
     setReservations(newList);
   };
 
+  // 찜 목록 유효기간 필터링 (예: 30일)
+  const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+  const now = new Date();
+  const validFavorites = favorites.filter(fav => {
+    if (!fav.created_at) return true; // created_at 없으면 무조건 보여줌
+    const createdDate = new Date(fav.created_at);
+    return now - createdDate < THIRTY_DAYS_MS;
+  });
+
   console.log('🧩 렌더링 조건 확인:', { user, vehicle });
 
   if (!user || !vehicle) return null;
@@ -248,17 +244,22 @@ function MyPage() {
 
       <section>
         <h3>❤️ 찜한 점검 항목</h3>
-        {favorites.length > 0 ? (
-          <div className="favorites-grid">
-            {favorites.map((fav) => (
-              <div key={fav.inspection_item_id} className="favorite-card">
-                <p><strong>{fav.title}</strong></p>
-                <p>카테고리: {fav.category}</p>
-                <p>설명: {fav.description}</p>
-                <button onClick={() => handleDeleteFavorite(fav.inspection_item_id)}>삭제</button>
-              </div>
-            ))}
-          </div>
+        {validFavorites.length > 0 ? (
+          <>
+            <p style={{ fontSize: '0.9rem', color: '#999', marginBottom: '0.8rem' }}>
+              찜한 항목은 30일 후 자동으로 목록에서 사라집니다.
+            </p>
+            <div className="favorites-grid">
+              {validFavorites.map((fav) => (
+                <div key={fav.inspection_item_id} className="favorite-card">
+                  <p><strong>{fav.title}</strong></p>
+                  <p>카테고리: {fav.category}</p>
+                  <p>설명: {fav.description}</p>
+                  {/* 삭제 버튼 제거 */}
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <p>찜한 항목이 없습니다.</p>
         )}
