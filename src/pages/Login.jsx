@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Form.css';
 
 function Login() {
@@ -82,6 +82,16 @@ function Login() {
           <button onClick={handleVerify}>로그인</button>
         </>
       )}
+
+      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <span>계정이 없으신가요? </span>
+        <Link
+          to="/signup"
+          style={{ color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}
+        >
+          회원가입
+        </Link>
+      </div>
     </div>
   );
 }
