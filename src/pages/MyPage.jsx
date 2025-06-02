@@ -26,7 +26,6 @@ function MyPage() {
     }
   };
 
-
   const handleDeleteFavorite = async (itemId) => {
     console.log('삭제 요청 ID:', itemId, '현재 user ID:', user?.id);
 
@@ -45,18 +44,16 @@ function MyPage() {
     }
   };
 
-
-
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
       const parsed = JSON.parse(saved);
       console.log('✅ 파싱된 유저:', parsed);
 
-      // camelCase로 변환하여 상태에 저장
+      // ✅ car_number → carNumber로 보정
       const fixedUser = {
         ...parsed,
-        carNumber: parsed.car_number
+        carNumber: parsed.carNumber || parsed.car_number
       };
 
       setUser(fixedUser);
@@ -70,11 +67,8 @@ function MyPage() {
     }
   }, [location]);
 
-
-
   console.log('🚧 user:', user);
   console.log('🚧 vehicle:', vehicle);
-
 
   const fetchVehicleInfo = async (carNumber) => {
     console.log('📤 fetchVehicleInfo 호출됨 - 차량번호:', carNumber);
@@ -108,8 +102,6 @@ function MyPage() {
       console.error('❌ 차량 정보 불러오기 실패:', err);
     }
   };
-
-
 
   const fetchNextInspections = async (carNumber) => {
     try {
@@ -240,7 +232,6 @@ function MyPage() {
           enableDynamicSearch={true}
         />
 
-
         <div style={{ marginTop: '1.5rem' }}>
           <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>📅 내 예약 목록</h4>
           {reservations.length > 0 ? (
@@ -290,8 +281,6 @@ function MyPage() {
       </section>
     </div>
   );
-
-
 }
 
 export default MyPage;
