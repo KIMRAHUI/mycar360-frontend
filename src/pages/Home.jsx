@@ -1,4 +1,4 @@
-// src/pages/Home.jsx
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/home.css';
@@ -61,7 +61,7 @@ function Home() {
   const isRepairKeyword = (keyword) => {
     const patterns = [
       '정비소', '카센터', '오토큐', '오토클릭', '카닥', '카모아',
-      '타이어', '현대', '기아', '쉐보레', '르노', '삼성', 'bmw', '폭스바겐','블루핸즈'
+      '타이어', '현대', '기아', '쉐보레', '르노', '삼성', 'bmw', '폭스바겐', '블루핸즈'
     ];
     return patterns.some(pattern => keyword.includes(pattern.toLowerCase()));
   };
@@ -118,6 +118,11 @@ function Home() {
             value={searchText}
             placeholder="차량 점검, 정비소 정보를 검색해보세요"
             onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           />
           <button onClick={handleSearch}>검색</button>
         </div>
