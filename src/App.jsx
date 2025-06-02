@@ -7,7 +7,7 @@ import Inspection from './pages/Inspection';
 import AutoShop from './pages/AutoShop';
 import History from './pages/History';
 import MyPage from './pages/MyPage';
-import Signup from './pages/Login';
+import Signup from './pages/Signup';  // Signup은 별도 페이지로 분리되어야 합니다.
 import Login from './pages/Login';
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/inspection" element={<Inspection />} />
         <Route path="/autoshop" element={<AutoShop />} />
-        {/*  로그인 상태에 따라 보호되는 페이지 */}
+        {/* 로그인 상태에 따라 보호되는 페이지 */}
         <Route
           path="/mypage"
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
@@ -43,6 +43,7 @@ function App() {
           path="/history"
           element={user ? <History /> : <Navigate to="/login" replace />}
         />
+        {/* 회원가입과 로그인 페이지 */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
       </Routes>

@@ -1,0 +1,151 @@
+.login-container {
+  max-width: 420px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #fffdf8;
+  border: 2px solid #ffd6c2;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+.login-container h2 {
+  text-align: center;
+  color: #4b3f2f;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.login-container input,
+.login-container select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.login-container input:focus,
+.login-container select:focus {
+  border-color: #ffa07a;
+  outline: none;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 0.95rem;
+  font-size: 1.1rem;
+  background-color: #ffa07a;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.login-container button:hover {
+  background-color: #ff8661;
+}
+
+.vehicle-info {
+  background-color: #fef7f2;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #ffd9c0;
+  color: #4b3f2f;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.vehicle-info p {
+  margin: 0.4rem 0;
+}
+
+.success-msg {
+  text-align: center;
+  font-weight: 700;
+  color: #48b04b;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+/* 주소 입력 + 버튼 한 줄에 배치 */
+.address-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.address-input-wrapper input {
+  flex-grow: 1; /* 남은 공간 모두 차지 */
+  min-width: 0; /* flex 아이템이 줄어들 수 있게 */
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.address-input-wrapper input:focus {
+  border-color: #ffa07a;
+  outline: none;
+}
+
+/* 버튼 너비 줄이기 */
+.address-input-wrapper button {
+width: 90px;     
+  max-width: 90px; 
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  background-color: #ffa07a;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.address-input-wrapper button:hover {
+  background-color: #ff8661;
+}
+
+/* 모바일 대응 */
+@media (min-width: 768px) {
+  .login-container {
+    max-width: 600px;
+    padding: 3rem 3.5rem;
+  }
+
+  .login-container h2 {
+    font-size: 1.8rem;
+  }
+
+  .login-container input,
+  .login-container select,
+  .login-container button {
+    font-size: 1.15rem;
+  }
+
+  .address-input-wrapper input {
+    font-size: 1.15rem;
+  }
+
+  .address-input-wrapper button {
+    width: 120px;
+    max-width: 120px;
+    font-size: 1.15rem;
+    padding: 1rem 1.5rem;
+  }
+}
