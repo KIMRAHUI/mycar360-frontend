@@ -43,8 +43,8 @@ function Login() {
       verified: true,
     };
     localStorage.setItem('car_user', JSON.stringify(fakeUser));
-    alert('로그인 성공! 마이페이지로 이동합니다.');
-    navigate('/mypage');
+    alert('로그인 성공! 홈으로 이동합니다.');
+    navigate('/');
   };
 
   return (

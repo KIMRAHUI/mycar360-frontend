@@ -42,7 +42,7 @@ function Signup() {
     if (inputCode === authCode) {
       setCodeVerified(true);
       alert('✅ 인증 완료! 회원가입 성공!');
-      navigate('/login');
+      navigate('/');
     } else {
       alert('인증번호가 일치하지 않습니다.');
     }
