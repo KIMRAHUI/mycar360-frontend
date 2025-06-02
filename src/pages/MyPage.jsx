@@ -16,19 +16,19 @@ function MyPage() {
   const [reservations, setReservations] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
+  // 찜 목록 불러오기
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
-      console.log('찜 목록 API 응답:', res.data);
+      console.log('✅ 찜 목록 API 응답:', res.data);
       setFavorites(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error('찜한 항목 불러오기 실패', err);
+      console.error('❌ 찜한 항목 불러오기 실패:', err);
     }
   };
 
+  // 찜 항목 삭제
   const handleDeleteFavorite = async (itemId) => {
-    console.log('삭제 요청 ID:', itemId, '현재 user ID:', user?.id);
-
     if (!user?.id) {
       alert('로그인 후 이용해주세요.');
       return;
@@ -39,22 +39,21 @@ function MyPage() {
       });
       setFavorites(prev => prev.filter(fav => fav.inspection_item_id !== itemId));
     } catch (err) {
-      console.error('찜 항목 삭제 실패:', err);
+      console.error('❌ 찜 항목 삭제 실패:', err);
       alert('삭제에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
+  // 마운트 시 유저 정보 로드
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
       const parsed = JSON.parse(saved);
-      console.log('✅ 파싱된 유저:', parsed);
-
-      // ✅ car_number → carNumber로 보정
       const fixedUser = {
         ...parsed,
         carNumber: parsed.carNumber || parsed.car_number
       };
+      console.log('✅ 유저 로드 완료:', fixedUser);
 
       setUser(fixedUser);
       setNicknameInput(fixedUser.nickname);
@@ -67,25 +66,16 @@ function MyPage() {
     }
   }, [location]);
 
-  console.log('🚧 user:', user);
-  console.log('🚧 vehicle:', vehicle);
-
+  // 차량 정보 불러오기
   const fetchVehicleInfo = async (carNumber) => {
-    console.log('📤 fetchVehicleInfo 호출됨 - 차량번호:', carNumber);
-
+    console.log('📤 차량정보 호출:', carNumber);
     try {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
-      console.log('✅ API 응답 데이터:', res.data);
+      console.log('✅ 차량 API 응답:', res.data);
 
       const data = res.data;
-
       const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
       const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
-
-
-
-      console.log('🛠 파싱된 parts:', parts);
-      console.log('📜 파싱된 history:', history);
 
       const sortedHistory = history.sort((a, b) => {
         const aDate = extractDateFromText(a);
@@ -99,23 +89,26 @@ function MyPage() {
         parsedHistory: sortedHistory.slice(0, 3),
       });
 
-      console.log('🚗 vehicle state 설정 완료');
+      console.log('✅ vehicle 상태 설정 완료');
     } catch (err) {
-      console.error('❌ 차량 정보 불러오기 실패:', err);
+      console.error('❌ 차량 정보 로딩 실패:', err);
     }
   };
 
+  // 다음 점검 예측 불러오기
   const fetchNextInspections = async (carNumber) => {
     try {
       const res = await axios.get(`/api/next-inspection/${carNumber}`);
+      console.log('📦 다음 점검 응답:', res.data);
       if (res.data?.nextInspections) {
         setNextInspections(res.data.nextInspections);
       }
     } catch (err) {
-      console.error('다음 점검 예측 실패:', err);
+      console.error('❌ 다음 점검 예측 실패:', err);
     }
   };
 
+  // 문자열에서 날짜 추출
   const extractDateFromText = (text) => {
     const match = text.match(/\d{4}\.\d{2}/);
     if (!match) return null;
@@ -150,6 +143,9 @@ function MyPage() {
     newList.splice(idx, 1);
     setReservations(newList);
   };
+
+  // 🚨 렌더링 차단 조건 확인 로그
+  console.log('🧩 렌더링 조건 확인:', { user, vehicle });
 
   if (!user || !vehicle) return null;
 
