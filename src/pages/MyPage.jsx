@@ -47,28 +47,49 @@ function MyPage() {
 
 
 
-
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
       const parsed = JSON.parse(saved);
-      setUser(parsed);
-      setNicknameInput(parsed.nickname);
-      fetchVehicleInfo(parsed.car_number);
-      fetchFavorites(parsed.id);
-      fetchNextInspections(parsed.car_number);
+      console.log('✅ 파싱된 유저:', parsed);
+
+      // camelCase로 변환하여 상태에 저장
+      const fixedUser = {
+        ...parsed,
+        carNumber: parsed.car_number
+      };
+
+      setUser(fixedUser);
+      setNicknameInput(fixedUser.nickname);
+      fetchVehicleInfo(fixedUser.carNumber);
+      fetchFavorites(fixedUser.id);
+      fetchNextInspections(fixedUser.carNumber);
     } else {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
     }
   }, [location]);
 
+
+
+  console.log('🚧 user:', user);
+  console.log('🚧 vehicle:', vehicle);
+
+
   const fetchVehicleInfo = async (carNumber) => {
+    console.log('📤 fetchVehicleInfo 호출됨 - 차량번호:', carNumber);
+
     try {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
+      console.log('✅ API 응답 데이터:', res.data);
+
       const data = res.data;
+
       const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
       const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
+
+      console.log('🛠 파싱된 parts:', parts);
+      console.log('📜 파싱된 history:', history);
 
       const sortedHistory = history.sort((a, b) => {
         const aDate = extractDateFromText(a);
@@ -81,10 +102,14 @@ function MyPage() {
         parsedParts: parts.slice(0, 3),
         parsedHistory: sortedHistory.slice(0, 3),
       });
+
+      console.log('🚗 vehicle state 설정 완료');
     } catch (err) {
-      console.error('차량 정보 불러오기 실패', err);
+      console.error('❌ 차량 정보 불러오기 실패:', err);
     }
   };
+
+
 
   const fetchNextInspections = async (carNumber) => {
     try {
