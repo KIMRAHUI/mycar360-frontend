@@ -39,7 +39,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/inspection" element={<Inspection />} />
         <Route path="/autoshop" element={<AutoShop />} />
-
+        
+        {/* 보호된 경로: 로그인된 경우에만 진입 */}
         <Route
           path="/mypage"
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
