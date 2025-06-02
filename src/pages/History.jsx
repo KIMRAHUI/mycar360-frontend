@@ -199,12 +199,54 @@ function History() {
             <li key={item.id} className="timeline-item">
               <div className="timeline-date">{item.date?.slice(0, 10)}</div>
               <div className="timeline-content">
-                <strong>{item.inspection_type}</strong> - {item.shop_name}<br />
-                <span className="note">{item.note}</span>
-                <div className="timeline-actions">
-                  <button onClick={() => handleEdit(item)}>수정</button>
-                  <button onClick={() => handleDelete(item.id)}>삭제</button>
-                </div>
+                {editId === item.id ? (
+                  <>
+                    <input
+                      type="date"
+                      name="date"
+                      value={form.date}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="text"
+                      name="inspection_type"
+                      value={form.inspection_type}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="text"
+                      name="shop_name"
+                      value={form.shop_name}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="text"
+                      name="note"
+                      value={form.note}
+                      onChange={handleChange}
+                    />
+                    <div className="timeline-actions">
+                      <button onClick={handleSubmit}>저장</button>
+                      <button
+                        onClick={() => {
+                          setEditId(null);
+                          setForm({ date: '', inspection_type: '', shop_name: '', note: '' });
+                        }}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <strong>{item.inspection_type}</strong> - {item.shop_name}<br />
+                    <span className="note">{item.note}</span>
+                    <div className="timeline-actions">
+                      <button onClick={() => handleEdit(item)}>수정</button>
+                      <button onClick={() => handleDelete(item.id)}>삭제</button>
+                    </div>
+                  </>
+                )}
               </div>
             </li>
           ))}

@@ -1,14 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/AutoShopMap.css';
 
 function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', enableDynamicSearch = false }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const hasInitializedRef = useRef(false); // ✅ 이미 초기화했는지 여부 체크
+  const hasInitializedRef = useRef(false);
+  const [selectedMarker, setSelectedMarker] = useState(null); // ✅ 클릭된 마커 상태
 
   function clearMarkers() {
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach(({ marker }) => marker.setMap(null));
     markersRef.current = [];
   }
 
@@ -32,7 +33,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
     }
 
     function initMap() {
-      if (hasInitializedRef.current) return; 
+      if (hasInitializedRef.current) return;
       hasInitializedRef.current = true;
 
       const container = document.getElementById('map');
@@ -85,12 +86,15 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
       if (status !== window.kakao.maps.services.Status.OK) return;
 
       data.slice(0, 5).forEach((place) => {
+        const position = new window.kakao.maps.LatLng(place.y, place.x);
+
         const marker = new window.kakao.maps.Marker({
           map,
-          position: new window.kakao.maps.LatLng(place.y, place.x),
+          position,
+          image: getMarkerImage(selectedMarker?.id === place.id),
         });
 
-        markersRef.current.push(marker);
+        markersRef.current.push({ marker, id: place.id });
 
         const content = `
           <div style="padding:5px; font-size:13px;">
@@ -105,6 +109,7 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
         window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
         window.kakao.maps.event.addListener(marker, 'click', () => {
           infowindow.open(map, marker);
+          setSelectedMarker({ id: place.id }); 
           if (onSelectShop) onSelectShop(place.place_name);
         });
       });
@@ -112,6 +117,17 @@ function AutoShopMap({ keyword = '정비소', onSelectShop, searchAddress = '', 
       location: centerCoords,
       radius: 3000,
     });
+  }
+
+  function getMarkerImage(isSelected) {
+    const imageSrc = isSelected ? '/marker-icon-green.png' : '/marker-icon-blue.png';
+    return new window.kakao.maps.MarkerImage(
+      imageSrc,
+      new window.kakao.maps.Size(25, 41),
+      {
+        offset: new window.kakao.maps.Point(12, 41),
+      }
+    );
   }
 
   return (

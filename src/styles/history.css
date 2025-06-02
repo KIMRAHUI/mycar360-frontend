@@ -1,4 +1,4 @@
-/* src/styles/history.css */
+
 
 .history-container {
   max-width: 700px;
@@ -105,14 +105,22 @@
   color: #333;
   line-height: 1.6;
   font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.timeline-content .note {
-  display: block;
-  color: #666;
+
+.timeline-content input {
+  padding: 0.5rem 0.7rem;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background-color: #fffefc;
+  box-sizing: border-box;
+  width: 100%;
 }
+
 
 .timeline-actions {
   margin-top: 0.8rem;
@@ -133,6 +141,13 @@
 
 .timeline-actions button:hover {
   background-color: #999;
+}
+
+.timeline-content .note {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .pagination {
@@ -200,7 +215,6 @@
     background: white;
   }
 
-  /* 필터 전용 버튼만 타겟 */
   .history-controls .filter-button {
     width: 100%;
     font-size: 0.95rem;
@@ -245,7 +259,6 @@
     width: 100%;
   }
 
-  /* 모든 입력 필드에 통일된 스타일 적용 */
   .history-form input {
     appearance: none;
     -webkit-appearance: none;
@@ -258,7 +271,6 @@
     border-radius: 8px;
   }
 
-  /* 아이콘이 밀리거나 크기 튀는 현상 방지 */
   .history-form input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 0;
     margin: 0;
@@ -266,7 +278,6 @@
   }
 }
 
-/* 📱 모바일 대응용: 767px 이하 (스마트폰용) */
 @media (max-width: 767px) {
   .history-form,
   .history-controls {
