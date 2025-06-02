@@ -23,21 +23,21 @@ function Signup() {
     }).open();
   };
 
-  // 인증번호 요청
+  // 인증번호 요청 (백엔드 호출 없이 간단히 난수 생성)
   const handleSendCode = () => {
     if (!carNumber || !nickname || !telco || !phoneNumber || !address) {
       alert('모든 필드를 정확히 입력해주세요.');
       return;
     }
-    // 실제로는 서버 호출해서 발송 처리하지만 여기선 콘솔용
     const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     setAuthCode(generatedCode);
     setCodeSent(true);
-    alert(`인증번호가 콘솔에 출력되었습니다: ${generatedCode} (임시)`);
+    alert(`인증번호가 콘솔에 출력되었습니다: ${generatedCode} (개발용)`);
+    console.log('발송된 인증번호:', generatedCode); // 콘솔에도 출력
     setInputCode('');
   };
 
-  // 인증번호 확인 후 회원가입 성공 처리 (실제 서버 API 호출 필요)
+  // 인증번호 확인 및 회원가입 성공 처리
   const handleVerifyCode = () => {
     if (inputCode === authCode) {
       setCodeVerified(true);

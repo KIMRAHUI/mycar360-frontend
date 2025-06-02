@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/axios';
 import '../styles/Form.css';
 
 function Login() {
@@ -11,50 +10,43 @@ function Login() {
   const [inputCode, setInputCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
 
-  // 인증번호 요청
-  const handleSendCode = async () => {
+  // 인증번호 요청 (백엔드 없이 단순히 플래그만 세움)
+  const handleSendCode = () => {
     if (!telco || !phoneNumber) {
-      return alert('통신사와 전화번호를 입력해주세요.');
+      alert('통신사와 전화번호를 입력해주세요.');
+      return;
     }
-    try {
-      await axios.post('/api/auth/signup', { phone_number: phoneNumber }); // code, car_number 절대 넣지 말 것
-      alert('인증번호가 콘솔에 출력되었습니다. 확인 후 입력해주세요.');
-      setCodeSent(true);
-    } catch (error) {
-      alert('인증번호 요청에 실패했습니다.');
-      console.error(error);
-    }
+    alert('인증번호가 콘솔에 출력되었습니다. (개발용)');
+    console.log('인증번호: 1234'); // 개발 시 하드코딩된 인증번호 예시
+    setCodeSent(true);
   };
 
-  // 인증번호 확인 및 로그인 처리
-  const handleVerify = async () => {
+  // 인증번호 확인 및 로컬 로그인 처리
+  const handleVerify = () => {
     if (!inputCode) {
       alert('인증번호를 입력하세요.');
       return;
     }
-    try {
-      const res = await axios.post('/api/auth/verify', {  // 여기 경로 꼭 verify 로 수정
-        phone_number: phoneNumber,
-        code: inputCode,
-        car_number: carNumber  // 신규 가입일 때만 사용됨 (백엔드에서 처리)
-      });
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        alert('로그인 성공!');
-        navigate('/');
-      } else {
-        alert('로그인에 실패했습니다.');
-      }
-    } catch (error) {
-      alert('인증번호가 올바르지 않거나 로그인에 실패했습니다.');
-      console.error(error);
+    if (inputCode !== '1234') {
+      alert('인증번호가 올바르지 않습니다.');
+      return;
     }
+
+    // 인증 성공 시 로컬스토리지에 사용자 정보 저장
+    const fakeUser = {
+      id: '1',
+      nickname: '포카칩님',
+      carNumber: carNumber || '12가3456', // 입력 없으면 기본값
+      verified: true,
+    };
+    localStorage.setItem('car_user', JSON.stringify(fakeUser));
+    alert('로그인 성공! 마이페이지로 이동합니다.');
+    navigate('/mypage');
   };
 
   return (
     <div className="login-container">
-      <h2>🚗 MyCar360 로그인</h2>
+      <h2>🚗 MyCar360 간편 로그인</h2>
 
       <select value={telco} onChange={e => setTelco(e.target.value)}>
         <option value="">통신사 선택</option>
@@ -83,7 +75,7 @@ function Login() {
         <>
           <input
             type="text"
-            placeholder="인증번호 입력"
+            placeholder="인증번호 입력 (개발용: 1234)"
             value={inputCode}
             onChange={e => setInputCode(e.target.value)}
           />
