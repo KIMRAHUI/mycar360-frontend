@@ -73,6 +73,11 @@ function MyPage() {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
       console.log('✅ 차량 API 응답:', res.data);
 
+      if (!res.data) {
+        console.warn('⚠️ 응답은 왔지만 데이터 없음:', res.data);
+        return;
+      }
+
       const data = res.data;
       const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
       const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
@@ -89,7 +94,9 @@ function MyPage() {
         parsedHistory: sortedHistory.slice(0, 3),
       });
 
-      console.log('✅ vehicle 상태 설정 완료');
+      console.log('🚗 최종 vehicle 세팅값:', finalVehicle); // 🔍 이거 추가
+      setVehicle(finalVehicle);
+      console.log('✅ vehicle 상태 설정 완료'); // 🔍 여기도 유지
     } catch (err) {
       console.error('❌ 차량 정보 로딩 실패:', err);
     }
