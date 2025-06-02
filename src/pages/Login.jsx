@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Form.css';
 
 function Login() {
@@ -9,9 +9,9 @@ function Login() {
   const [carNumber, setCarNumber] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState(null);
+  const [generatedCode, setGeneratedCode] = useState('');
 
-  // 인증번호 요청 (개발용 랜덤 생성)
+  // 인증번호 요청 (랜덤 6자리 생성 및 개발용 안내창 표시)
   const handleSendCode = () => {
     if (!telco || !phoneNumber) {
       alert('통신사와 전화번호를 입력해주세요.');
@@ -19,7 +19,8 @@ function Login() {
     }
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedCode(code);
-    alert(`개발용 인증번호: ${code} (실제 서비스에서는 문자로 전송됩니다)`);
+    alert(`인증번호가 콘솔에 출력되었습니다. (개발용)\n인증번호: ${code}`);
+    console.log('인증번호:', code);
     setCodeSent(true);
   };
 
@@ -38,7 +39,7 @@ function Login() {
     const fakeUser = {
       id: '1',
       nickname: '포카칩님',
-      carNumber: carNumber || '12가3456',
+      carNumber: carNumber || '12가3456', // 입력 없으면 기본값
       verified: true,
     };
     localStorage.setItem('car_user', JSON.stringify(fakeUser));
@@ -84,6 +85,14 @@ function Login() {
           <button onClick={handleVerify}>로그인</button>
         </>
       )}
+
+      {/* 회원가입 링크 추가 */}
+      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+        아직 회원이 아니신가요?{' '}
+        <Link to="/signup" style={{ color: '#007bff', textDecoration: 'underline' }}>
+          회원가입
+        </Link>
+      </p>
     </div>
   );
 }
