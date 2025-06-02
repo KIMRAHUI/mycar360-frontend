@@ -54,9 +54,9 @@ function MyPage() {
       const parsed = JSON.parse(saved);
       setUser(parsed);
       setNicknameInput(parsed.nickname);
-      fetchVehicleInfo(parsed.carNumber);
+      fetchVehicleInfo(parsed.car_number);
       fetchFavorites(parsed.id);
-      fetchNextInspections(parsed.carNumber);
+      fetchNextInspections(parsed.car_number);
     } else {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
