@@ -25,6 +25,24 @@ function MyPage() {
     }
   };
 
+
+  const handleDeleteFavorite = async (itemId) => {
+    if (!user?.id) {
+      alert('로그인 후 이용해주세요.');
+      return;
+    }
+    try {
+      await axios.delete(`/api/favorites/${itemId}`, {
+        params: { user_id: user.id }
+      });
+      setFavorites(favorites.filter(fav => fav.inspection_item_id !== itemId));
+    } catch (err) {
+      console.error('찜 항목 삭제 실패:', err);
+      alert('삭제에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
@@ -218,6 +236,7 @@ function MyPage() {
                 <p><strong>{fav.title}</strong></p>
                 <p>카테고리: {fav.category}</p>
                 <p>설명: {fav.description}</p>
+                <button onClick={() => handleDeleteFavorite(fav.inspection_item_id)}>삭제</button>
               </div>
             ))}
           </div>
@@ -241,6 +260,8 @@ function MyPage() {
       </section>
     </div>
   );
+
+
 }
 
 export default MyPage;
