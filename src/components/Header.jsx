@@ -1,10 +1,14 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './header.css';
+
 function Header({ user, setUser }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.clear();
-    setUser(null);      // 로그인 상태 초기화//
+    setUser(null);      // 로그인 상태 초기화
     navigate('/');
   };
 

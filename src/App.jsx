@@ -11,7 +11,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 
 function App() {
-  const [user, setUser] = useState(null); // null = 로딩 중, false = 로그인 안됨 //
+  const [user, setUser] = useState(null); // null = 로딩 중, false = 로그인 안됨
 
   useEffect(() => {
     const stored = localStorage.getItem('car_user');
