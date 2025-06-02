@@ -16,7 +16,6 @@ function MyPage() {
   const [reservations, setReservations] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  // 찜 목록 불러오기
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
@@ -27,7 +26,6 @@ function MyPage() {
     }
   };
 
-  // 찜 항목 삭제
   const handleDeleteFavorite = async (itemId) => {
     if (!user?.id) {
       alert('로그인 후 이용해주세요.');
@@ -44,7 +42,6 @@ function MyPage() {
     }
   };
 
-  // 마운트 시 유저 정보 로드
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
@@ -66,7 +63,6 @@ function MyPage() {
     }
   }, [location]);
 
-  // 차량 정보 불러오기
   const fetchVehicleInfo = async (carNumber) => {
     console.log('📤 차량정보 호출:', carNumber);
     try {
@@ -88,21 +84,20 @@ function MyPage() {
         return bDate - aDate;
       });
 
-      setVehicle({
+      const finalVehicle = {
         ...data,
         parsedParts: parts.slice(0, 3),
         parsedHistory: sortedHistory.slice(0, 3),
-      });
+      };
 
-      console.log('🚗 최종 vehicle 세팅값:', finalVehicle); // 🔍 이거 추가
+      console.log('🚗 최종 vehicle 세팅값:', finalVehicle);
       setVehicle(finalVehicle);
-      console.log('✅ vehicle 상태 설정 완료'); // 🔍 여기도 유지
+      console.log('✅ vehicle 상태 설정 완료');
     } catch (err) {
       console.error('❌ 차량 정보 로딩 실패:', err);
     }
   };
 
-  // 다음 점검 예측 불러오기
   const fetchNextInspections = async (carNumber) => {
     try {
       const res = await axios.get(`/api/next-inspection/${carNumber}`);
@@ -115,7 +110,6 @@ function MyPage() {
     }
   };
 
-  // 문자열에서 날짜 추출
   const extractDateFromText = (text) => {
     const match = text.match(/\d{4}\.\d{2}/);
     if (!match) return null;
@@ -151,7 +145,6 @@ function MyPage() {
     setReservations(newList);
   };
 
-  // 🚨 렌더링 차단 조건 확인 로그
   console.log('🧩 렌더링 조건 확인:', { user, vehicle });
 
   if (!user || !vehicle) return null;
