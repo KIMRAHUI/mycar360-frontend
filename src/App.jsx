@@ -7,24 +7,29 @@ import Inspection from './pages/Inspection';
 import AutoShop from './pages/AutoShop';
 import History from './pages/History';
 import MyPage from './pages/MyPage';
-import Signup from './pages/Signup';  // Signup은 별도 페이지로 분리되어야 합니다.
+import Signup from './pages/Signup';
 import Login from './pages/Login';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // null = 로딩 중, false = 로그인 안됨
 
   useEffect(() => {
-    const syncUser = () => {
-      const stored = localStorage.getItem('car_user');
-      setUser(stored ? JSON.parse(stored) : null);
-    };
-
-    syncUser(); // 최초 실행
-
-    const interval = setInterval(syncUser, 500); // 0.5초마다 user 상태 갱신
-
-    return () => clearInterval(interval); // 정리
+    const stored = localStorage.getItem('car_user');
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (err) {
+        console.error('유저 정보 파싱 실패:', err);
+        setUser(false);
+      }
+    } else {
+      setUser(false);
+    }
   }, []);
+
+  if (user === null) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>로딩 중입니다...</div>;
+  }
 
   return (
     <>
@@ -34,7 +39,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/inspection" element={<Inspection />} />
         <Route path="/autoshop" element={<AutoShop />} />
-        {/* 로그인 상태에 따라 보호되는 페이지 */}
+
         <Route
           path="/mypage"
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
@@ -43,7 +48,7 @@ function App() {
           path="/history"
           element={user ? <History /> : <Navigate to="/login" replace />}
         />
-        {/* 회원가입과 로그인 페이지 */}
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
       </Routes>

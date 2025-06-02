@@ -79,8 +79,9 @@ function MyPage() {
 
       const data = res.data;
 
-      const parts = data.parts || [];
-      const history = data.history || [];
+      const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
+      const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
+
 
 
       console.log('🛠 파싱된 parts:', parts);
@@ -150,7 +151,7 @@ function MyPage() {
     setReservations(newList);
   };
 
-  // if (!user || !vehicle) return null;
+  if (!user || !vehicle) return null;
 
   return (
     <div className="mypage-container">
