@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Form.css';
 
-function Login() {
+function Login({ setUser }) {
   const navigate = useNavigate();
   const [telco, setTelco] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -35,7 +35,7 @@ function Login() {
       return;
     }
 
-    // 인증 성공 시 로컬스토리지에 사용자 정보 저장
+    // 인증 성공 시 로컬스토리지에 사용자 정보 저장 및 부모 컴포넌트에 상태 전달
     const fakeUser = {
       id: '1',
       nickname: '포카칩님',
@@ -43,6 +43,7 @@ function Login() {
       verified: true,
     };
     localStorage.setItem('car_user', JSON.stringify(fakeUser));
+    setUser(fakeUser);
     alert('로그인 성공! 홈으로 이동합니다.');
     navigate('/');
   };
