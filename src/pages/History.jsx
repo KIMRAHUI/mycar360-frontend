@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/history.css';
 
@@ -8,12 +8,23 @@ function History() {
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [carNumber, setCarNumber] = useState('');
+
+  // 상단 신규 등록용 form 상태
   const [form, setForm] = useState({
     date: '',
     inspection_type: '',
     shop_name: '',
     note: ''
   });
+
+  // 수정용 별도 form 상태
+  const [editForm, setEditForm] = useState({
+    date: '',
+    inspection_type: '',
+    shop_name: '',
+    note: ''
+  });
+
   const [editId, setEditId] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [sortNewest, setSortNewest] = useState(true);
@@ -72,8 +83,12 @@ function History() {
       });
   };
 
-  const handleChange = (e) => {
+  const handleFormChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleEditFormChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
@@ -102,11 +117,26 @@ function History() {
 
   const handleEdit = (item) => {
     setEditId(item.id);
-    setForm({
+    setEditForm({
       date: item.date ? item.date.slice(0, 10) : '',
       inspection_type: item.inspection_type || '',
       shop_name: item.shop_name || '',
       note: item.note || ''
+    });
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    if (!editForm.date || !editForm.inspection_type) return;
+
+    fetch(`${baseUrl}/api/history/${editId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm)
+    }).then(() => {
+      setEditForm({ date: '', inspection_type: '', shop_name: '', note: '' });
+      setEditId(null);
+      loadHistory(carNumber);
     });
   };
 
@@ -117,6 +147,8 @@ function History() {
       }).then(() => loadHistory(carNumber));
     }
   };
+
+  // ... 기존 필터, 정렬, 페이지네이션 로직 유지 ...
 
   const sortedHistory = [...history].sort((a, b) => {
     return sortNewest
@@ -145,13 +177,14 @@ function History() {
     <main className="history-container">
       <h2>정비 이력</h2>
 
+      {/* 신규 등록용 폼 */}
       <form className="history-form" onSubmit={handleSubmit}>
         <p className="mobile-hint">📅 점검일을 선택해주세요</p>
         <input
           type="date"
           name="date"
           value={form.date}
-          onChange={handleChange}
+          onChange={handleFormChange}
           required
         />
         <input
@@ -159,7 +192,7 @@ function History() {
           name="inspection_type"
           placeholder="점검 항목"
           value={form.inspection_type}
-          onChange={handleChange}
+          onChange={handleFormChange}
           required
         />
         <input
@@ -167,18 +200,19 @@ function History() {
           name="shop_name"
           placeholder="정비소 이름"
           value={form.shop_name}
-          onChange={handleChange}
+          onChange={handleFormChange}
         />
         <input
           type="text"
           name="note"
           placeholder="메모"
           value={form.note}
-          onChange={handleChange}
+          onChange={handleFormChange}
         />
         <button type="submit">{editId ? '수정' : '등록'}</button>
       </form>
 
+      {/* 검색 및 정렬 UI */}
       <div className="history-controls">
         <input
           type="text"
@@ -191,6 +225,7 @@ function History() {
         </button>
       </div>
 
+      {/* 이력 리스트 */}
       {currentItems.length === 0 ? (
         <p>조건에 맞는 이력이 없습니다.</p>
       ) : (
@@ -204,33 +239,33 @@ function History() {
                     <input
                       type="date"
                       name="date"
-                      value={form.date}
-                      onChange={handleChange}
+                      value={editForm.date}
+                      onChange={handleEditFormChange}
                     />
                     <input
                       type="text"
                       name="inspection_type"
-                      value={form.inspection_type}
-                      onChange={handleChange}
+                      value={editForm.inspection_type}
+                      onChange={handleEditFormChange}
                     />
                     <input
                       type="text"
                       name="shop_name"
-                      value={form.shop_name}
-                      onChange={handleChange}
+                      value={editForm.shop_name}
+                      onChange={handleEditFormChange}
                     />
                     <input
                       type="text"
                       name="note"
-                      value={form.note}
-                      onChange={handleChange}
+                      value={editForm.note}
+                      onChange={handleEditFormChange}
                     />
                     <div className="timeline-actions">
-                      <button onClick={handleSubmit}>저장</button>
+                      <button onClick={handleEditSubmit}>저장</button>
                       <button
                         onClick={() => {
                           setEditId(null);
-                          setForm({ date: '', inspection_type: '', shop_name: '', note: '' });
+                          setEditForm({ date: '', inspection_type: '', shop_name: '', note: '' });
                         }}
                       >
                         취소
@@ -253,6 +288,7 @@ function History() {
         </ul>
       )}
 
+      {/* 페이지네이션 */}
       {totalPages > 1 && (
         <div className="pagination">
           <button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1}>이전</button>
