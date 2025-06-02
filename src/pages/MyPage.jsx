@@ -19,6 +19,7 @@ function MyPage() {
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
+      console.log('찜 목록 API 응답:', res.data);
       setFavorites(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('찜한 항목 불러오기 실패', err);
@@ -27,6 +28,8 @@ function MyPage() {
 
 
   const handleDeleteFavorite = async (itemId) => {
+    console.log('삭제 요청 ID:', itemId, '현재 user ID:', user?.id);
+
     if (!user?.id) {
       alert('로그인 후 이용해주세요.');
       return;
@@ -35,12 +38,14 @@ function MyPage() {
       await axios.delete(`/api/favorites/${itemId}`, {
         params: { user_id: user.id }
       });
-      setFavorites(favorites.filter(fav => fav.inspection_item_id !== itemId));
+      setFavorites(prev => prev.filter(fav => fav.inspection_item_id !== itemId));
     } catch (err) {
       console.error('찜 항목 삭제 실패:', err);
       alert('삭제에 실패했습니다. 다시 시도해주세요.');
     }
   };
+
+
 
 
   useEffect(() => {
