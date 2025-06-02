@@ -42,3 +42,5 @@ function Header({ user, setUser }) {
     </>
   );
 }
+
+export default Header;
