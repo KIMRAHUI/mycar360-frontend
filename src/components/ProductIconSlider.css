@@ -1,0 +1,51 @@
+.icon-slider-wrapper {
+  max-width: 1024px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.icon-slide {
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  background-color: #fff9f2;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  min-width: 100px;
+}
+
+.icon-slide:hover {
+  transform: scale(1.05);
+  background-color: #fff3e6;
+}
+
+.emoji {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ✅ 모바일 최적화 */
+@media (max-width: 768px) {
+  .icon-slide {
+    padding: 0.8rem;
+    margin: 0 0.3rem;
+    min-width: 90px;
+  }
+
+  .emoji {
+    font-size: 1.6rem;
+  }
+
+  .label {
+    font-size: 0.8rem;
+  }
+}

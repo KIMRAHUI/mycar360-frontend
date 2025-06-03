@@ -63,7 +63,11 @@
   padding-left: 0.5rem;
 }
 
-.menu-header {
+/* ✅ greeting과 X 아이콘을 가로로 정렬 */
+.menu-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
@@ -83,21 +87,13 @@
 }
 
 .close-button {
-  align-self: flex-end;
   font-size: 1.4rem;
   background: none;
   border: none;
   cursor: pointer;
   color: #4b3f2f;
-  margin-bottom: 0.5rem;
+  margin-left: 1rem; 
 }
-
-.greeting {
-  font-size: 1rem;
-  color: #4b3f2f;
-  margin-bottom: 1rem;
-}
-
 
 @keyframes slideIn {
   from {

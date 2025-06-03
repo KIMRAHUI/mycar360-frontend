@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/home.css';
+import ProductIconSlider from '../components/ProductIconSlider'; // ✅ 슬라이더 import
 
 const recommendations = [
   {
@@ -35,7 +35,7 @@ const faqs = [
 
 function Home() {
   const navigate = useNavigate();
-  const [carImage, setCarImage] = useState('/elantra-n.jpg');
+  const [carImage, setCarImage] = useState('/main-car.jpg');
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
@@ -89,15 +89,9 @@ function Home() {
       </section>
 
       <div className="image-upload-wrapper">
-        <label className="image-upload-tag">
-          🚓 image upload
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: 'none' }}
-          />
-        </label>
+        <button className="main-button">
+          부릉부릉 🚗💨
+        </button>
       </div>
 
       <section className="welcome-box">
@@ -128,6 +122,9 @@ function Home() {
         </div>
       </section>
 
+      {/*아이콘 슬라이더 삽입 위치 */}
+      <ProductIconSlider />
+
       <section className="recommendations">
         <h3>🔧 추천 점검 항목</h3>
         <div className="recommendation-cards">
@@ -146,7 +143,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="quick-buttons">
+      <section className="navbuttons">
         <button onClick={() => navigate('/inspection')}>점검하기</button>
         <button onClick={() => navigate('/autoshop')}>정비소찾기</button>
         <button
@@ -166,7 +163,7 @@ function Home() {
           <div className="support-info">
             <p><strong>📧 이메일:</strong> support@mycar360.co.kr</p>
             <p><strong>☎ 전화번호:</strong> 1588-1234</p>
-            <p><strong>🕐 운영시간:</strong> 평일 09:00 ~ 18:00 (주말/공휴일 휴무)</p>
+            <p><strong>🕐 운영시간:</strong> 평일 09:00 ~ 18:00 <br/>(주말/공휴일 휴무)</p>
             <p><strong>🏢 회사 주소:</strong> 서울특별시 강남구 테헤란로 123</p>
           </div>
 

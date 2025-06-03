@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './header.css';
 
 function Header({ user, setUser }) {
@@ -8,7 +9,7 @@ function Header({ user, setUser }) {
 
   const handleLogout = () => {
     localStorage.clear();
-    setUser(null);      // 로그인 상태 초기화
+    setUser(null); // 로그인 상태 초기화
     navigate('/');
   };
 
@@ -23,7 +24,7 @@ function Header({ user, setUser }) {
         <>
           <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
           <nav className="side-menu">
-            <div className="menu-header">
+            <div className="menu-header-row">
               {user && <span className="greeting">안녕하세요, {user.nickname}</span>}
               <button className="close-button" onClick={() => setMenuOpen(false)}>✕</button>
             </div>
