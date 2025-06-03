@@ -9,8 +9,8 @@ function Header({ user, setUser }) {
 
   const handleLogout = () => {
     localStorage.clear();
-    setUser(null); // 로그인 상태 초기화
-    navigate('/');
+    setUser(false); // null 대신 false로 변경 (로딩화면 방지)
+    navigate('/');  // 로그아웃 후 홈으로 이동
   };
 
   return (

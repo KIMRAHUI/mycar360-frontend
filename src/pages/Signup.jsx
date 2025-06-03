@@ -10,7 +10,7 @@ function Signup() {
   const [telco, setTelco] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-  const [authCode, setAuthCode] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
@@ -25,21 +25,20 @@ function Signup() {
 
   // 인증번호 요청 (백엔드 호출 없이 간단히 난수 생성)
   const handleSendCode = () => {
-    if (!carNumber || !nickname || !telco || !phoneNumber || !address) {
-      alert('모든 필드를 정확히 입력해주세요.');
+    if (!telco || !phoneNumber) {
+      alert('통신사와 전화번호를 입력해주세요.');
       return;
     }
-    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setAuthCode(generatedCode);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(code);
+    alert(`📧 인증번호가 콘솔에 출력되었습니다: ${code}`);
+    console.log('인증번호:', code);
     setCodeSent(true);
-    alert(`인증번호가 콘솔에 출력되었습니다: ${generatedCode} (개발용)`);
-    console.log('발송된 인증번호:', generatedCode); // 콘솔에도 출력
-    setInputCode('');
   };
 
   // 인증번호 확인 및 회원가입 성공 처리
   const handleVerifyCode = () => {
-    if (inputCode === authCode) {
+    if (inputCode === generatedCode) {
       setCodeVerified(true);
       alert('✅ 인증 완료! 회원가입 성공!');
       navigate('/');
