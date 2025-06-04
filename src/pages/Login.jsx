@@ -47,7 +47,7 @@ const handleSendCode = () => {
     };
     localStorage.setItem('car_user', JSON.stringify(fakeUser));
     setUser(fakeUser);
-    alert('로그인 성공! 홈으로 이동합니다.');
+    alert("😎 로그인 완료! 내 차 관리, 이제부터 함께해요~ 🛠️🚗");
     navigate('/');
   };
 

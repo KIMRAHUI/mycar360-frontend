@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/home.css';
-import ProductIconSlider from '../components/ProductIconSlider'; // ✅ 슬라이더 import
+import ProductIconSlider from '../components/ProductIconSlider';
 
 const recommendations = [
   {
@@ -28,9 +28,9 @@ const faqs = [
     answer: '현재 위치를 기반으로 3km 내에 있는 정비소 정보를 제공해드립니다.',
   },
   {
-    question: '정비소 예약은 어떻게 하나요?',
-    answer: '정비소 찾기 페이지에서 지도를 통해 정비소를 선택하고 예약을 진행할 수 있습니다.',
-  },
+  question: 'MyCar360은 어떤 서비스인가요?',
+  answer: '내 차량의 점검과 정비 이력을 한눈에 관리할 수 있는 스마트 차량 헬스케어 플랫폼입니다.',
+}
 ];
 
 function Home() {
@@ -39,6 +39,18 @@ function Home() {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
+
+  const [carY, setCarY] = useState(null);
+  const [carEmoji, setCarEmoji] = useState('🚗');
+  const [tip, setTip] = useState('');
+
+  const carColors = ['🚗', '🚙', '🚕', '🚘'];
+  const tips = [
+    '🚗 타이어 공기압은 매달 체크해요!',
+    '🔋 배터리는 보통 2~3년에 한 번 교체해요!',
+    '🧊 냉각수 보충도 잊지 마세요!',
+    '🌧️ 장마철엔 와이퍼 점검 필수!',
+  ];
 
   useEffect(() => {
     const existing = document.getElementById('kakao-map-script');
@@ -79,6 +91,27 @@ function Home() {
     }
   };
 
+  const handleVroomClick = () => {
+    const scrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    const totalHeight = document.body.scrollHeight;
+
+    let targetY;
+    if (scrollY < viewportHeight / 2) {
+      targetY = 80;
+    } else if (scrollY + viewportHeight >= totalHeight - 100) {
+      targetY = viewportHeight - 100;
+    } else {
+      targetY = viewportHeight / 2;
+    }
+
+    setCarEmoji(carColors[Math.floor(Math.random() * carColors.length)]);
+    setTip(tips[Math.floor(Math.random() * tips.length)]);
+    setCarY(targetY);
+
+    setTimeout(() => setCarY(null), 2000);
+  };
+
   const user = JSON.parse(localStorage.getItem('car_user'));
   const nickname = user?.nickname || null;
 
@@ -89,10 +122,17 @@ function Home() {
       </section>
 
       <div className="image-upload-wrapper">
-        <button className="main-button">
+        <button className="main-button" onClick={handleVroomClick}>
           부릉부릉 🚗💨
         </button>
       </div>
+
+      {carY !== null && (
+        <div className="scroll-car" style={{ top: `${carY}px` }}>
+          <div className="speech-bubble">{tip}</div>
+          <div className="car">{carEmoji}💨</div>
+        </div>
+      )}
 
       <section className="welcome-box">
         <p className="hello-text">
@@ -122,7 +162,6 @@ function Home() {
         </div>
       </section>
 
-      {/*아이콘 슬라이더 삽입 위치 */}
       <ProductIconSlider />
 
       <section className="recommendations">

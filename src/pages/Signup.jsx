@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Form.css';
 
-function Signup() {
+function Signup({ setUser }) {
   const navigate = useNavigate();
 
   const [carNumber, setCarNumber] = useState('');
@@ -23,7 +23,6 @@ function Signup() {
     }).open();
   };
 
-  // 인증번호 요청 (백엔드 호출 없이 간단히 난수 생성)
   const handleSendCode = () => {
     if (!telco || !phoneNumber) {
       alert('통신사와 전화번호를 입력해주세요.');
@@ -36,11 +35,23 @@ function Signup() {
     setCodeSent(true);
   };
 
-  // 인증번호 확인 및 회원가입 성공 처리
   const handleVerifyCode = () => {
     if (inputCode === generatedCode) {
       setCodeVerified(true);
       alert('✅ 인증 완료! 회원가입 성공!');
+
+      const userInfo = {
+        id: Date.now(), // 임시 ID (나중에 백엔드 연동 시 대체)
+        carNumber,
+        nickname,
+        address,
+      };
+      localStorage.setItem('car_user', JSON.stringify(userInfo));
+
+      //상태 갱신으로 Header 렌더링 유도
+      setUser(userInfo);
+
+      //홈으로 이동
       navigate('/');
     } else {
       alert('인증번호가 일치하지 않습니다.');

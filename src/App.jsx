@@ -40,7 +40,7 @@ function App() {
         <Route path="/inspection" element={<Inspection />} />
         <Route path="/autoshop" element={<AutoShop />} />
 
-        {/* 보호된 경로: 로그인된 경우에만 진입 */}
+        {/* 보호된 경로: 로그인된 경우에만 진입 가능 */}
         <Route
           path="/mypage"
           element={user ? <MyPage /> : <Navigate to="/login" replace />}
@@ -50,9 +50,8 @@ function App() {
           element={user ? <History /> : <Navigate to="/login" replace />}
         />
 
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/signup" element={<Signup setUser={setUser} />} />
 
-        {/* 로그인 페이지에는 user, setUser props 전달해서 로그인 시 상태 업데이트 */}
         <Route path="/login" element={<Login setUser={setUser} />} />
       </Routes>
 
