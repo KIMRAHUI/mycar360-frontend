@@ -12,6 +12,7 @@ function Signup({ setUser }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [inputCode, setInputCode] = useState('');
+  const [authCode, setAuthCode] = useState(''); // ✅ 인증번호 상태 저장
   const [codeSent, setCodeSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
 
@@ -32,11 +33,12 @@ function Signup({ setUser }) {
 
     try {
       const res = await axios.post('/api/auth/signup', { phone_number: phoneNumber });
-      const code = res.data.code; // 백엔드에서 받은 인증번호
+      const code = res.data.code;
 
-      // 개발용 alert 출력
-      alert(`📨 인증번호가 발송되었습니다!\n(개발용) 인증번호: ${code}`);
+      setAuthCode(code); // ✅ 상태로 저장
       setCodeSent(true);
+
+      alert(`📨 인증번호가 발송되었습니다!\n(개발용) 인증번호: ${code}`);
     } catch (err) {
       console.error('❌ 인증번호 발송 실패:', err.response?.data || err);
       alert('인증번호 발송에 실패했습니다.');
@@ -45,6 +47,11 @@ function Signup({ setUser }) {
 
   // 2단계: 인증번호 확인 + 회원가입
   const handleVerifyCode = async () => {
+    if (inputCode !== authCode) {
+      alert('❌ 인증번호가 일치하지 않습니다.');
+      return;
+    }
+
     try {
       const response = await axios.post('/api/auth/verify', {
         phone_number: phoneNumber,
@@ -65,8 +72,8 @@ function Signup({ setUser }) {
       alert('✅ 인증 완료! 회원가입 성공!');
       navigate('/');
     } catch (err) {
-      console.error('❌ 인증 실패:', err);
-      alert('인증에 실패했습니다.');
+      console.error('❌ 인증 실패 또는 회원가입 오류:', err);
+      alert('회원가입 중 문제가 발생했습니다.');
     }
   };
 
