@@ -15,7 +15,7 @@ function Signup({ setUser }) {
   const [authCode, setAuthCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
-  const [vehicleType, setVehicleType] = useState(''); // ✅ 차종 입력
+  const [vehicleType, setVehicleType] = useState(''); 
 
   const handleAddressSearch = () => {
     new window.daum.Postcode({
