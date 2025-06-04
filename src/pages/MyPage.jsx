@@ -15,19 +15,16 @@ function MyPage() {
   const [reservationShop, setReservationShop] = useState('');
   const [reservations, setReservations] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [userAddress, setUserAddress] = useState('');
 
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
-      console.log('✅ 찜 목록 API 응답:', res.data);
       setFavorites(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('❌ 찜한 항목 불러오기 실패:', err);
     }
   };
-
-  // 삭제 기능은 제거, 버튼도 렌더링 안함
-  // 필요 시 백엔드 삭제 API 호출 부분도 제거해주세요
 
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
@@ -37,13 +34,15 @@ function MyPage() {
         ...parsed,
         carNumber: parsed.carNumber || parsed.car_number
       };
-      console.log('✅ 유저 로드 완료:', fixedUser);
+
+      console.log('✅ fixedUser:', fixedUser);
 
       setUser(fixedUser);
       setNicknameInput(fixedUser.nickname);
       fetchVehicleInfo(fixedUser.carNumber);
       fetchFavorites(fixedUser.id);
       fetchNextInspections(fixedUser.carNumber);
+      fetchUserAddress(fixedUser.id);
     } else {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
@@ -51,35 +50,20 @@ function MyPage() {
   }, [location]);
 
   const fetchVehicleInfo = async (carNumber) => {
-    console.log('📤 차량정보 호출:', carNumber);
     try {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
-      console.log('✅ 차량 API 응답:', res.data);
-
-      if (!res.data) {
-        console.warn('⚠️ 응답은 왔지만 데이터 없음:', res.data);
-        return;
-      }
+      if (!res.data) return;
 
       const data = res.data;
       const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
       const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
+      const sortedHistory = history.sort((a, b) => extractDateFromText(b) - extractDateFromText(a));
 
-      const sortedHistory = history.sort((a, b) => {
-        const aDate = extractDateFromText(a);
-        const bDate = extractDateFromText(b);
-        return bDate - aDate;
-      });
-
-      const finalVehicle = {
+      setVehicle({
         ...data,
         parsedParts: parts.slice(0, 3),
         parsedHistory: sortedHistory.slice(0, 3),
-      };
-
-      console.log('🚗 최종 vehicle 세팅값:', finalVehicle);
-      setVehicle(finalVehicle);
-      console.log('✅ vehicle 상태 설정 완료');
+      });
     } catch (err) {
       console.error('❌ 차량 정보 로딩 실패:', err);
     }
@@ -88,7 +72,6 @@ function MyPage() {
   const fetchNextInspections = async (carNumber) => {
     try {
       const res = await axios.get(`/api/next-inspection/${carNumber}`);
-      console.log('📦 다음 점검 응답:', res.data);
       if (res.data?.nextInspections) {
         setNextInspections(res.data.nextInspections);
       }
@@ -96,6 +79,16 @@ function MyPage() {
       console.error('❌ 다음 점검 예측 실패:', err);
     }
   };
+
+  const fetchUserAddress = async (userId) => {
+    try {
+      const res = await axios.get(`/api/users/${userId}`);
+      setUserAddress(res.data.address);
+    } catch (err) {
+      console.error('❌ 주소 정보 불러오기 실패:', err);
+    }
+  };
+
 
   const extractDateFromText = (text) => {
     const match = text.match(/\d{4}\.\d{2}/);
@@ -132,16 +125,13 @@ function MyPage() {
     setReservations(newList);
   };
 
-  // 찜 목록 유효기간 필터링 (예: 30일)
   const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
   const now = new Date();
   const validFavorites = favorites.filter(fav => {
-    if (!fav.created_at) return true; // created_at 없으면 무조건 보여줌
+    if (!fav.created_at) return true;
     const createdDate = new Date(fav.created_at);
     return now - createdDate < THIRTY_DAYS_MS;
   });
-
-  console.log('🧩 렌더링 조건 확인:', { user, vehicle });
 
   if (!user || !vehicle) return null;
 
@@ -154,6 +144,7 @@ function MyPage() {
         <p>차량번호: {user.carNumber}</p>
         <p>모델: {vehicle.type}</p>
         <p>연식: {vehicle.year}</p>
+        <p>주소: {userAddress || '정보 없음'}</p>
         <p>인증상태: {user.verified ? '완료됨' : '미완료'}</p>
       </section>
 
@@ -255,7 +246,6 @@ function MyPage() {
                   <p><strong>{fav.title}</strong></p>
                   <p>카테고리: {fav.category}</p>
                   <p>설명: {fav.description}</p>
-                  {/* 삭제 버튼 제거 */}
                 </div>
               ))}
             </div>

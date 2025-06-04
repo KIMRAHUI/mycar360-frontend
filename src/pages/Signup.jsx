@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Form.css';
 
 function Signup({ setUser }) {
@@ -10,7 +11,6 @@ function Signup({ setUser }) {
   const [telco, setTelco] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-  const [generatedCode, setGeneratedCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
@@ -23,38 +23,46 @@ function Signup({ setUser }) {
     }).open();
   };
 
-  const handleSendCode = () => {
+  // 1단계: 인증번호 발송
+  const handleSendCode = async () => {
     if (!telco || !phoneNumber) {
       alert('통신사와 전화번호를 입력해주세요.');
       return;
     }
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(code);
-    alert(`📧 인증번호가 콘솔에 출력되었습니다: ${code}`);
-    console.log('인증번호:', code);
-    setCodeSent(true);
+
+    try {
+      await axios.post('/api/auth/signup', { phone_number: phoneNumber });
+      alert('📨 인증번호가 발송되었습니다!');
+      setCodeSent(true);
+    } catch (err) {
+      console.error('❌ 인증번호 발송 실패:', err);
+      alert('인증번호 발송에 실패했습니다.');
+    }
   };
 
-  const handleVerifyCode = () => {
-    if (inputCode === generatedCode) {
-      setCodeVerified(true);
-      alert('✅ 인증 완료! 회원가입 성공!');
-
-      const userInfo = {
-        id: Date.now(), // 임시 ID (나중에 백엔드 연동 시 대체)
-        carNumber,
+  // 2단계: 인증번호 확인 + 회원가입
+  const handleVerifyCode = async () => {
+    try {
+      const response = await axios.post('/api/auth/verify', {
+        phone_number: phoneNumber,
+        code: inputCode,
+        car_number: carNumber,
         nickname,
         address,
-      };
-      localStorage.setItem('car_user', JSON.stringify(userInfo));
+      });
 
-      //상태 갱신으로 Header 렌더링 유도
-      setUser(userInfo);
+      const { token, user } = response.data;
 
-      //홈으로 이동
+      localStorage.setItem('car_token', token);
+      localStorage.setItem('car_user', JSON.stringify(user));
+      setUser(user);
+      setCodeVerified(true);
+
+      alert('✅ 인증 완료! 회원가입 성공!');
       navigate('/');
-    } else {
-      alert('인증번호가 일치하지 않습니다.');
+    } catch (err) {
+      console.error('❌ 인증 실패:', err);
+      alert('인증에 실패했습니다.');
     }
   };
 
