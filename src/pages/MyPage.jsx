@@ -138,6 +138,7 @@ function MyPage() {
       <section>
         <h3>🚗 내 차량 정보</h3>
         <p>차량번호: {user.car_number}</p>
+        <p>차종: {user.vehicle_type || '정보 없음'}</p> {/* ✅ 추가됨 */}
         <p>모델: {vehicle.type}</p>
         <p>연식: {vehicle.year}</p>
         <p>주소: {userAddress || '정보 없음'}</p>

@@ -12,9 +12,10 @@ function Signup({ setUser }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [inputCode, setInputCode] = useState('');
-  const [authCode, setAuthCode] = useState(''); 
+  const [authCode, setAuthCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
+  const [vehicleType, setVehicleType] = useState(''); // ✅ 차종 입력
 
   const handleAddressSearch = () => {
     new window.daum.Postcode({
@@ -24,7 +25,6 @@ function Signup({ setUser }) {
     }).open();
   };
 
-  // 1단계: 인증번호 발송
   const handleSendCode = async () => {
     if (!telco || !phoneNumber) {
       alert('통신사와 전화번호를 입력해주세요.');
@@ -35,7 +35,7 @@ function Signup({ setUser }) {
       const res = await axios.post('/api/auth/signup', { phone_number: phoneNumber });
       const code = res.data.code;
 
-      setAuthCode(code); 
+      setAuthCode(code);
       setCodeSent(true);
 
       alert(`📨 인증번호가 발송되었습니다!\n(개발용) 인증번호: ${code}`);
@@ -45,42 +45,42 @@ function Signup({ setUser }) {
     }
   };
 
-  // 2단계: 인증번호 확인 + 회원가입
   const handleVerifyCode = async () => {
-  try {
-    console.log('📤 백엔드로 전송되는 값:', {
-      phone_number: phoneNumber,
-      code: inputCode,
-      car_number: carNumber,
-      nickname,
-      address,
-      telco,
-    });
+    try {
+      console.log('📤 백엔드로 전송되는 값:', {
+        phone_number: phoneNumber,
+        code: inputCode,
+        car_number: carNumber,
+        nickname,
+        address,
+        telco,
+        vehicle_type: vehicleType,
+      });
 
-    const response = await axios.post('/api/auth/verify', {
-      phone_number: phoneNumber,
-      code: inputCode,
-      car_number: carNumber,
-      nickname,
-      address,
-      telco,
-    });
+      const response = await axios.post('/api/auth/verify', {
+        phone_number: phoneNumber,
+        code: inputCode,
+        car_number: carNumber,
+        nickname,
+        address,
+        telco,
+        vehicle_type: vehicleType,
+      });
 
-    const { token, user } = response.data;
+      const { token, user } = response.data;
 
-    localStorage.setItem('car_token', token);
-    localStorage.setItem('car_user', JSON.stringify(user));
-    setUser(user);
-    setCodeVerified(true);
+      localStorage.setItem('car_token', token);
+      localStorage.setItem('car_user', JSON.stringify(user));
+      setUser(user);
+      setCodeVerified(true);
 
-    alert('✅ 인증 완료! 회원가입 성공!');
-    navigate('/');
-  } catch (err) {
-    console.error('❌ 인증 실패 또는 회원가입 오류:', err);
-    alert('회원가입 중 문제가 발생했습니다.');
-  }
-};
-
+      alert('✅ 인증 완료! 회원가입 성공!');
+      navigate('/');
+    } catch (err) {
+      console.error('❌ 인증 실패 또는 회원가입 오류:', err);
+      alert('회원가입 중 문제가 발생했습니다.');
+    }
+  };
 
   return (
     <div className="login-container">
@@ -99,6 +99,14 @@ function Signup({ setUser }) {
         placeholder="닉네임 입력"
         value={nickname}
         onChange={e => setNickname(e.target.value)}
+        disabled={codeVerified}
+      />
+
+      <input
+        type="text"
+        placeholder="차종 입력 (예: 아반떼, 쏘나타)"
+        value={vehicleType}
+        onChange={e => setVehicleType(e.target.value)}
         disabled={codeVerified}
       />
 
