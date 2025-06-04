@@ -17,6 +17,20 @@ function MyPage() {
   const [favorites, setFavorites] = useState([]);
   const [userAddress, setUserAddress] = useState('');
 
+  const fetchUserInfoByCarNumber = async (carNumber) => {
+    try {
+      const res = await axios.get(`/api/user-by-car/${carNumber}`);
+      if (res.data) {
+        setUser(res.data);
+        setNicknameInput(res.data.nickname);
+        setUserAddress(res.data.address);
+        fetchFavorites(res.data.id);
+      }
+    } catch (err) {
+      console.error('❌ 사용자 정보 불러오기 실패:', err);
+    }
+  };
+
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
@@ -30,19 +44,11 @@ function MyPage() {
     const saved = localStorage.getItem('car_user');
     if (saved) {
       const parsed = JSON.parse(saved);
-      const fixedUser = {
-        ...parsed,
-        carNumber: parsed.carNumber || parsed.car_number
-      };
-
-      console.log('✅ fixedUser:', fixedUser);
-
-      setUser(fixedUser);
-      setNicknameInput(fixedUser.nickname);
-      fetchVehicleInfo(fixedUser.carNumber);
-      fetchFavorites(fixedUser.id);
-      fetchNextInspections(fixedUser.carNumber);
-      fetchUserAddress(fixedUser.id);
+      const carNumber = parsed.carNumber || parsed.car_number;
+      console.log('✅ carNumber로 사용자 정보 새로고침 중:', carNumber);
+      fetchUserInfoByCarNumber(carNumber);
+      fetchVehicleInfo(carNumber);
+      fetchNextInspections(carNumber);
     } else {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
@@ -79,16 +85,6 @@ function MyPage() {
       console.error('❌ 다음 점검 예측 실패:', err);
     }
   };
-
-  const fetchUserAddress = async (userId) => {
-    try {
-      const res = await axios.get(`/api/users/${userId}`);
-      setUserAddress(res.data.address);
-    } catch (err) {
-      console.error('❌ 주소 정보 불러오기 실패:', err);
-    }
-  };
-
 
   const extractDateFromText = (text) => {
     const match = text.match(/\d{4}\.\d{2}/);
@@ -141,7 +137,7 @@ function MyPage() {
 
       <section>
         <h3>🚗 내 차량 정보</h3>
-        <p>차량번호: {user.carNumber}</p>
+        <p>차량번호: {user.car_number}</p>
         <p>모델: {vehicle.type}</p>
         <p>연식: {vehicle.year}</p>
         <p>주소: {userAddress || '정보 없음'}</p>

@@ -31,11 +31,14 @@ function Signup({ setUser }) {
     }
 
     try {
-      await axios.post('/api/auth/signup', { phone_number: phoneNumber });
-      alert('📨 인증번호가 발송되었습니다!');
+      const res = await axios.post('/api/auth/signup', { phone_number: phoneNumber });
+      const code = res.data.code; // 백엔드에서 받은 인증번호
+
+      // 개발용 alert 출력
+      alert(`📨 인증번호가 발송되었습니다!\n(개발용) 인증번호: ${code}`);
       setCodeSent(true);
     } catch (err) {
-      console.error('❌ 인증번호 발송 실패:', err);
+      console.error('❌ 인증번호 발송 실패:', err.response?.data || err);
       alert('인증번호 발송에 실패했습니다.');
     }
   };

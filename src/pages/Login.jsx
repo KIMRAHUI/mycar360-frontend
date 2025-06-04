@@ -20,7 +20,7 @@ const handleSendCode = () => {
   }
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   setGeneratedCode(code);
-  alert(`📧 인증번호가 콘솔에 출력되었습니다: ${code}`);
+  alert(`📧 인증번호가 콘솔에 출력되었습니다(개발용): ${code}`);
   console.log('인증번호:', code);
   setCodeSent(true);
 };
