@@ -52,6 +52,7 @@ function Signup({ setUser }) {
         car_number: carNumber,
         nickname,
         address,
+        telco,
       });
 
       const { token, user } = response.data;
