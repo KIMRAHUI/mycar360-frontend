@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, BarElement, ArcElement, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import './StatisticsModal.css';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, BarElement, ArcElement, Tooltip, Legend);
@@ -39,12 +49,12 @@ const StatisticsModal = ({ onClose }) => {
               '장마 - 브레이크 고장 사고',
               '가을 - 타이어 마모 사고',
               '겨울 - 배터리 방전 사고',
-              '한파 - 냉각수 부족 사고'
+              '한파 - 냉각수 부족 사고',
             ];
             return labels[index];
-          }
-        }
-      }
+          },
+        },
+      },
     },
   };
 
@@ -55,12 +65,12 @@ const StatisticsModal = ({ onClose }) => {
         label: '가성비 차량 순위',
         data: [35, 30, 28, 26, 24, 22, 20, 18, 17, 15],
         backgroundColor: '#ffa07a',
-        hoverBackgroundColor: '#ff7043'
+        hoverBackgroundColor: '#ff7043',
       },
     ],
   };
 
-  const barOptions = {
+  const popularCarOptions = {
     responsive: true,
     plugins: {
       legend: { display: false },
@@ -69,21 +79,21 @@ const StatisticsModal = ({ onClose }) => {
           label: function (context) {
             const car = context.label;
             const preferences = {
-              '아반떼': '20대 선호도 45%',
-              'K3': '30대 선호도 40%',
-              '스파크': '60대 선호도 38%',
-              'XM3': '30~40대 선호도 35%',
-              '캐스퍼': '여성 운전자 선호도 42%',
-              '레이': '초보 운전자 선호도 47%',
-              '베뉴': '1인 가구 선호도 36%',
-              '티볼리': '대학생 선호도 32%',
-              '코나': '직장인 선호도 41%',
-              '트레일블레이저': '패밀리카 선호도 38%'
+              아반떼: '20대 선호도 45%',
+              K3: '30대 선호도 40%',
+              스파크: '60대 선호도 38%',
+              XM3: '30~40대 선호도 35%',
+              캐스퍼: '여성 운전자 선호도 42%',
+              레이: '초보 운전자 선호도 47%',
+              베뉴: '1인 가구 선호도 36%',
+              티볼리: '대학생 선호도 32%',
+              코나: '직장인 선호도 41%',
+              트레일블레이저: '패밀리카 선호도 38%',
             };
             return `${car}: ${preferences[car]}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   };
 
@@ -104,18 +114,19 @@ const StatisticsModal = ({ onClose }) => {
       legend: {
         position: 'bottom',
         labels: {
-          boxWidth: 15
-        }
+          boxWidth: 15,
+        },
       },
       tooltip: {
         callbacks: {
           label: function (context) {
             const item = context.label;
-            const value = context.formattedValue;
-            return `${item}: ₩${Number(value).toLocaleString()}원`;
-          }
-        }
-      }
+            const value = context.raw; // ⭕ NaN 방지
+            if (typeof value !== 'number') return `${item}: 데이터 없음`;
+            return `${item}: ₩${value.toLocaleString()}원`;
+          },
+        },
+      },
     },
   };
 
@@ -130,26 +141,53 @@ const StatisticsModal = ({ onClose }) => {
     ],
   };
 
+  const commonItemsOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label;
+            const value = context.raw; // ⭕ undefined 방지
+            if (typeof value !== 'number') return `${label}: 데이터 없음`;
+            return `${label}: ${value}% 선택`;
+          },
+        },
+      },
+    },
+  };
+
   return (
     <div className="statistics-modal-overlay">
       <div className="statistics-modal">
         <div className="modal-header">
           <h2>차량 점검 통계</h2>
-          <button onClick={onClose} className="close-button">✕</button>
+          <button onClick={onClose} className="close-button">
+            ✕
+          </button>
         </div>
 
         <div className="tab-buttons">
-          <button className={activeTab === 0 ? 'active' : ''} onClick={() => setActiveTab(0)}>계절별 사고</button>
-          <button className={activeTab === 1 ? 'active' : ''} onClick={() => setActiveTab(1)}>차량 인기순위</button>
-          <button className={activeTab === 2 ? 'active' : ''} onClick={() => setActiveTab(2)}>평균 점검 비용</button>
-          <button className={activeTab === 3 ? 'active' : ''} onClick={() => setActiveTab(3)}>자주 검색된 항목</button>
+          <button className={activeTab === 0 ? 'active' : ''} onClick={() => setActiveTab(0)}>
+            계절별 사고
+          </button>
+          <button className={activeTab === 1 ? 'active' : ''} onClick={() => setActiveTab(1)}>
+            차량 인기순위
+          </button>
+          <button className={activeTab === 2 ? 'active' : ''} onClick={() => setActiveTab(2)}>
+            평균 점검 비용
+          </button>
+          <button className={activeTab === 3 ? 'active' : ''} onClick={() => setActiveTab(3)}>
+            자주 검색된 항목
+          </button>
         </div>
 
         {activeTab !== 2 && (
           <div className="chart-area">
             {activeTab === 0 && <Line data={seasonalAccidentData} options={seasonalAccidentOptions} />}
-            {activeTab === 1 && <Bar data={popularCarData} options={barOptions} />} 
-            {activeTab === 3 && <Bar data={commonItemsData} options={barOptions} />}
+            {activeTab === 1 && <Bar data={popularCarData} options={popularCarOptions} />}
+            {activeTab === 3 && <Bar data={commonItemsData} options={commonItemsOptions} />}
           </div>
         )}
 
