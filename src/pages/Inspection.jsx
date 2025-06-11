@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import '../styles/inspection.css';
 import StatisticsModal from '../components/StatisticsModal';
+import InspectionModal from '../components/InspectionModal'; 
 
 function Inspection() {
   const [items, setItems] = useState([]);
@@ -163,26 +164,17 @@ function Inspection() {
         ))}
       </div>
 
-      {selected && (
-        <div className="modal-overlay" onClick={() => setSelected(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>{selected.title}</h3>
-            <p><strong>카테고리:</strong> {selected.category}</p>
-            <p><strong>추천 주기:</strong> {selected.recommended_cycle}</p>
-            <p><strong>관련 부품:</strong> {selected.parts}</p>
-            <p><strong>예상 비용:</strong> {selected.cost_range}</p>
-            {selected.warning_light && (
-              <p><strong>경고등:</strong> {selected.warning_light}</p>
-            )}
-            <p className="detail">{selected.detail}</p>
-            <button onClick={() => setSelected(null)}>닫기</button>
-          </div>
-        </div>
+            {selected && (
+        <>
+          {console.log('✅ 모달 렌더링됨:', selected)}
+          <InspectionModal item={selected} onClose={() => setSelected(null)} />
+        </>
       )}
 
       {showStats && <StatisticsModal onClose={() => setShowStats(false)} />}
     </main>
   );
+
 }
 
 export default Inspection;

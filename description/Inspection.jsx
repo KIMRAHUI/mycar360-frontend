@@ -1,32 +1,36 @@
+// src/pages/Inspection.jsx
+
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from '../api/axios'; // 커스텀 Axios 인스턴스
-import '../styles/inspection.css';
-import StatisticsModal from '../components/StatisticsModal'; // 통계 보기 모달 컴포넌트
+import axios from '../api/axios'; // ✅ 백엔드 API 호출용 axios 인스턴스
+import '../styles/inspection.css'; // ✅ 메인 페이지 스타일
+import StatisticsModal from '../components/StatisticsModal'; // ✅ 통계 모달
+import InspectionModal from '../components/InspectionModal'; // ✅ 점검 항목 상세 모달
 
 function Inspection() {
-  // 상태 변수들 선언
-  const [items, setItems] = useState([]);            // 전체 점검 항목 리스트
-  const [filtered, setFiltered] = useState([]);      // 필터링된 항목 리스트
-  const [category, setCategory] = useState('');      // 선택된 카테고리
-  const [search, setSearch] = useState('');          // 검색어
-  const [selected, setSelected] = useState(null);    // 모달로 띄울 선택된 항목
-  const [error, setError] = useState(null);          // 오류 메시지
-  const [page, setPage] = useState(1);               // 현재 페이지
-  const [total, setTotal] = useState(0);             // 전체 항목 수
-  const [sort, setSort] = useState('title_asc');     // 정렬 방식
-  const [favorites, setFavorites] = useState([]);    // 찜한 항목 ID 배열
-  const [showStats, setShowStats] = useState(false); // 통계 모달 토글
+  // ✅ 상태 관리
+  const [items, setItems] = useState([]);              // 전체 점검 항목
+  const [filtered, setFiltered] = useState([]);        // 검색/필터링된 항목
+  const [category, setCategory] = useState('');        // 선택된 점검 카테고리
+  const [search, setSearch] = useState('');            // 검색어
+  const [selected, setSelected] = useState(null);      // 모달로 띄울 선택 항목
+  const [error, setError] = useState(null);            // 에러 메시지
+  const [page, setPage] = useState(1);                 // 현재 페이지
+  const [total, setTotal] = useState(0);               // 전체 항목 수
+  const [sort, setSort] = useState('title_asc');       // 정렬 방식
+  const [favorites, setFavorites] = useState([]);      // 찜한 항목 ID 목록
+  const [showStats, setShowStats] = useState(false);   // 통계 모달 표시 여부
 
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword')?.toLowerCase() || '';
   const navigate = useNavigate();
 
+  // ✅ 로그인한 사용자 정보
   const user = JSON.parse(localStorage.getItem('car_user'));
   const userId = user?.id || null;
-  const limit = 10; // 페이지당 항목 수
+  const limit = 10; // 한 페이지당 항목 수
 
-  // ✅ 점검 항목 목록을 서버에서 불러오는 useEffect
+  // ✅ 서버로부터 점검 항목 목록 가져오기 (카테고리/페이지/정렬 기준 변경 시마다 실행)
   useEffect(() => {
     const params = { page, limit, sort, ...(category && { category }) };
     axios.get('/api/inspection-items', { params })
@@ -45,7 +49,7 @@ function Inspection() {
       });
   }, [page, category, sort]);
 
-  // ✅ 검색어 또는 카테고리로 필터링하는 useEffect
+  // ✅ 검색어/카테고리/URL 쿼리(keyword) 기준으로 항목 필터링
   useEffect(() => {
     let temp = [...items];
     const safeStr = (v) => (v ?? '').toString().toLowerCase();
@@ -66,7 +70,7 @@ function Inspection() {
     setFiltered(temp);
   }, [search, keyword, category, items]);
 
-  // ✅ 로그인된 사용자라면 찜한 항목 불러오기
+  // ✅ 찜 목록 가져오기 (로그인한 유저일 경우에만)
   useEffect(() => {
     if (userId) {
       axios.get(`/api/favorites/${userId}`)
@@ -75,12 +79,13 @@ function Inspection() {
     }
   }, [userId]);
 
-  // 찜 여부 확인
+  // ✅ 특정 항목이 찜되어 있는지 확인
   const isFavorite = (id) => favorites.includes(id);
 
-  // 찜 토글 함수
+  // ✅ 찜 토글 처리 (찜 추가/삭제)
   const toggleFavorite = (id) => {
     if (!userId) return alert('로그인 후 사용 가능합니다');
+
     const req = isFavorite(id)
       ? axios.delete(`/api/favorites/${id}`, { params: { user_id: userId } })
       : axios.post('/api/favorites', { user_id: userId, inspection_item_id: id });
@@ -92,14 +97,15 @@ function Inspection() {
     }).catch(err => console.error('❌ 찜 변경 실패:', err));
   };
 
-  const totalPages = Math.ceil(total / limit); // 총 페이지 수 계산
+  // ✅ 전체 페이지 수 계산
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <main className="inspection-container">
       <h2>🚗 차량 점검하기</h2>
       <p>점검 항목 검색과 카테고리 검색 가능해요!</p>
 
-      {/* 검색 및 정렬 */}
+      {/* ✅ 검색 & 정렬 선택 */}
       <div className="inspection-controls">
         <div className="search-sort-wrap">
           <input
@@ -117,7 +123,7 @@ function Inspection() {
           </select>
         </div>
 
-        {/* 카테고리 버튼 및 통계 모달 버튼 */}
+        {/* ✅ 카테고리 필터 버튼 + 통계 보기 */}
         <div className="quick-buttons">
           <button onClick={() => setCategory('기본점검')}>기본점검</button>
           <button onClick={() => setCategory('계절점검')}>계절점검</button>
@@ -126,9 +132,10 @@ function Inspection() {
         </div>
       </div>
 
+      {/* ✅ 에러 메시지 출력 */}
       {error && <p className="error-message">{error}</p>}
 
-      {/* 점검 항목 카드 리스트 */}
+      {/* ✅ 점검 항목 카드 목록 */}
       <div className="card-list">
         {filtered.length === 0 ? (
           <p className="no-results">조건에 맞는 점검 항목이 없습니다.</p>
@@ -145,7 +152,7 @@ function Inspection() {
                   <button
                     className="favorite-btn"
                     onClick={(e) => {
-                      e.stopPropagation();
+                      e.stopPropagation(); // 부모 클릭 방지
                       toggleFavorite(item.id);
                     }}
                   >
@@ -160,7 +167,7 @@ function Inspection() {
         )}
       </div>
 
-      {/* 페이지네이션 */}
+      {/* ✅ 페이지네이션 버튼 */}
       <div className="pagination">
         {Array.from({ length: totalPages }, (_, i) => (
           <button
@@ -173,25 +180,15 @@ function Inspection() {
         ))}
       </div>
 
-      {/* 상세 모달 */}
+      {/* ✅ 상세 모달 (선택된 항목) */}
       {selected && (
-        <div className="modal-overlay" onClick={() => setSelected(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>{selected.title}</h3>
-            <p><strong>카테고리:</strong> {selected.category}</p>
-            <p><strong>추천 주기:</strong> {selected.recommended_cycle}</p>
-            <p><strong>관련 부품:</strong> {selected.parts}</p>
-            <p><strong>예상 비용:</strong> {selected.cost_range}</p>
-            {selected.warning_light && (
-              <p><strong>경고등:</strong> {selected.warning_light}</p>
-            )}
-            <p className="detail">{selected.detail}</p>
-            <button onClick={() => setSelected(null)}>닫기</button>
-          </div>
-        </div>
+        <>
+          {console.log('✅ 모달 렌더링됨:', selected)}
+          <InspectionModal item={selected} onClose={() => setSelected(null)} />
+        </>
       )}
 
-      {/* 통계 모달 */}
+      {/* ✅ 통계 모달 */}
       {showStats && <StatisticsModal onClose={() => setShowStats(false)} />}
     </main>
   );
