@@ -2,109 +2,104 @@ import { useEffect, useRef, useState } from 'react';
 import '../styles/AutoShopMap.css';
 
 function AutoShopMap({
-  keyword = '정비소', // 검색 키워드 기본값 설정 (정비소)
-  onSelectShop, // 정비소 선택 시 실행되는 콜백 함수
-  searchAddress = '', // 검색할 주소 (기본값은 빈 문자열)
-  enableDynamicSearch = false, // 동적 검색을 활성화할지 여부
-  mapType = 'road', // 기본 맵 타입 (일반지도: 'road', 하이브리드: 'hybrid')
-  onShopsUpdate, // 정비소 리스트 업데이트 함수
+  keyword = '정비소', // 검색 키워드 기본값
+  onSelectShop,      // 부모로 선택된 상호명 전달하는 콜백
+  searchAddress = '', // 주소 검색 시 이동할 위치
+  enableDynamicSearch = false, // 지도 이동 시 자동 재검색 기능 여부
+  mapType = 'road',            // 'road' 또는 'hybrid' 지도 유형
+  onShopsUpdate,               // 검색된 정비소 목록 전달 콜백
 }) {
-  const mapRef = useRef(null); // 지도 컨테이너를 참조하는 ref
-  const mapInstanceRef = useRef(null); // 지도 인스턴스를 참조하는 ref
-  const markersRef = useRef([]); // 마커를 저장하는 ref
-  const hasInitializedRef = useRef(false); // 맵이 초기화 되었는지 여부를 추적하는 ref
-  const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
+  const mapRef = useRef(null);              // 지도 div 참조
+  const mapInstanceRef = useRef(null);      // 카카오맵 인스턴스 저장
+  const markersRef = useRef([]);            // 마커 저장 리스트
+  const hasInitializedRef = useRef(false);  // 맵 최초 초기화 여부
+  const infoWindowRef = useRef(null);       // 열려 있는 InfoWindow 관리
 
-  // 마커 클리어 함수: 기존의 마커들을 제거하는 함수
+  const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태 저장
+
+  // 기존 마커를 지도에서 제거하고 배열 초기화
   function clearMarkers() {
-    markersRef.current.forEach(({ marker }) => marker.setMap(null)); // 모든 마커의 맵에서 제거
-    markersRef.current = []; // 마커 배열 초기화
+    markersRef.current.forEach(({ marker }) => marker.setMap(null));
+    markersRef.current = [];
   }
 
-  // 컴포넌트가 로드될 때 실행되는 useEffect
+  // 지도 초기화: 최초 1회 실행
   useEffect(() => {
-    // 카카오 맵 SDK가 이미 index.html에서 로드되므로, 별도로 로드할 필요 없음
     if (window.kakao?.maps) {
-      console.log("Kakao Maps SDK 로드됨");
-      window.kakao.maps.load(initMap); // 카카오 맵 SDK 로드 후 지도 초기화
+      window.kakao.maps.load(initMap);
     } else {
       console.error("Kakao Maps SDK가 로드되지 않았습니다.");
     }
 
-    // 맵 초기화 함수
     function initMap() {
-      if (hasInitializedRef.current) return; // 맵이 이미 초기화 되었다면 실행하지 않음
+      if (hasInitializedRef.current) return; // 중복 초기화 방지
       hasInitializedRef.current = true;
 
-      const container = document.getElementById('map'); // 맵을 표시할 HTML 요소
-      if (!container || !window.kakao) return; // 요소나 카카오 맵이 없다면 종료
+      const container = document.getElementById('map');
+      if (!container || !window.kakao) return;
 
-      // 위치 정보 얻어서 지도 초기화
+      // 현재 위치를 기준으로 지도 생성
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          const map = new window.kakao.maps.Map(container, { // 지도 인스턴스 생성
-            center: new window.kakao.maps.LatLng(latitude, longitude), // 현재 위치로 중심 설정
-            level: 4, // 줌 레벨 설정
+          const map = new window.kakao.maps.Map(container, {
+            center: new window.kakao.maps.LatLng(latitude, longitude),
+            level: 4,
           });
 
-          mapInstanceRef.current = map; // 지도 인스턴스를 ref에 저장
-          renderMarkers(map, new window.kakao.maps.LatLng(latitude, longitude)); // 마커 렌더링
+          mapInstanceRef.current = map;
+          renderMarkers(map, map.getCenter());
 
-          // 동적 검색 기능 활성화 (지도 중심이 바뀔 때마다 마커 업데이트)
+          // 지도 이동 시마다 검색 실행 (옵션)
           if (enableDynamicSearch) {
             window.kakao.maps.event.addListener(map, 'idle', () => {
-              const center = map.getCenter();
-              renderMarkers(map, center);
+              renderMarkers(map, map.getCenter());
             });
           }
         },
         (err) => {
-          console.error('위치 정보 오류', err); // 위치 정보 오류 처리
+          console.error('위치 정보 오류', err);
         }
       );
     }
   }, [keyword, onSelectShop, enableDynamicSearch]);
 
-  // 지도 뷰 타입 변경 감지
+  // 지도 유형 (일반도/스카이뷰) 전환
   useEffect(() => {
     if (!mapInstanceRef.current || !window.kakao?.maps) return;
     const typeId =
       mapType === 'road'
-        ? window.kakao.maps.MapTypeId.ROADMAP // 일반 지도
-        : window.kakao.maps.MapTypeId.HYBRID; // 하이브리드 지도
-    mapInstanceRef.current.setMapTypeId(typeId); // 지도 타입 설정
+        ? window.kakao.maps.MapTypeId.ROADMAP
+        : window.kakao.maps.MapTypeId.HYBRID;
+    mapInstanceRef.current.setMapTypeId(typeId);
   }, [mapType]);
 
-  // 마커 렌더링 함수
+  // 키워드 변경 또는 선택된 마커 변경 시 마커 다시 렌더링
   useEffect(() => {
     if (mapInstanceRef.current) {
       renderMarkers(mapInstanceRef.current, mapInstanceRef.current.getCenter());
     }
-  }, [keyword, selectedMarker]); // 키워드나 선택된 마커가 변경될 때마다 마커 렌더링
+  }, [keyword, selectedMarker]);
 
-  // 주소 검색 기능
+  // 주소 검색에 따른 지도 이동
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
 
     const geocoder = new window.kakao.maps.services.Geocoder();
-    geocoder.addressSearch(searchAddress, (result, status) => { // 주소 검색 API 호출
+    geocoder.addressSearch(searchAddress, (result, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
-        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x); // 검색된 주소의 좌표
-        const map = mapInstanceRef.current;
-
-        map.setCenter(coords); // 지도 중심을 검색된 좌표로 설정
-        renderMarkers(map, coords); // 마커 렌더링
+        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+        mapInstanceRef.current.setCenter(coords);
+        renderMarkers(mapInstanceRef.current, coords);
       }
     });
-  }, [searchAddress]); // 주소가 변경될 때마다 실행
+  }, [searchAddress]);
 
-  // 마커 렌더링 함수
+  // 마커 렌더링 함수 (검색된 정비소 목록 생성)
   function renderMarkers(map, centerCoords) {
-    clearMarkers(); // 기존 마커들 제거
-    const ps = new window.kakao.maps.services.Places(); // 카카오 맵 장소 검색 서비스
+    clearMarkers();
 
-    // 장소 검색 API 호출
+    const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(
       keyword,
       (data, status) => {
@@ -112,17 +107,18 @@ function AutoShopMap({
 
         const shopList = [];
 
-        data.slice(0, 5).forEach((place) => { // 최대 5개 장소에 대해 마커를 추가
-          const position = new window.kakao.maps.LatLng(place.y, place.x); // 장소 좌표
+        data.slice(0, 5).forEach((place) => {
+          const position = new window.kakao.maps.LatLng(place.y, place.x);
 
           const marker = new window.kakao.maps.Marker({
             map,
             position,
-            image: getMarkerImage(selectedMarker?.id === place.id), // 마커 이미지 설정
+            image: getMarkerImage(selectedMarker?.id === place.id), // 선택 여부에 따라 마커 색상 다르게
           });
 
-          markersRef.current.push({ marker, id: place.id }); // 마커 리스트에 추가
+          markersRef.current.push({ marker, id: place.id });
 
+          // InfoWindow에 표시할 내용
           const content = `
             <div style="padding:5px; font-size:13px;">
               <b>${place.place_name}</b><br/>
@@ -130,20 +126,33 @@ function AutoShopMap({
               ${place.address_name || ''}
             </div>
           `;
-          const infowindow = new window.kakao.maps.InfoWindow({ content });
 
-          // 마커에 이벤트 리스너 추가
-          window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
-          window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
-          window.kakao.maps.event.addListener(marker, 'click', () => {
-            infowindow.open(map, marker); // 클릭한 마커에 대한 인포윈도우 열기
-            setSelectedMarker({ id: place.id }); // 선택된 마커 상태 업데이트
-            markersRef.current.forEach(({ marker }) => marker.setMap(null)); // 다른 마커 숨기기
-            markersRef.current = [{ marker, id: place.id }]; // 현재 클릭한 마커만 표시
-            if (onSelectShop) onSelectShop(place.place_name); // 선택된 정비소 이름 전달
+          // 마우스 오버 시 InfoWindow 열기
+          window.kakao.maps.event.addListener(marker, 'mouseover', () => {
+            if (!infoWindowRef.current || infoWindowRef.current.getContent() !== content) {
+              infoWindowRef.current = new window.kakao.maps.InfoWindow({ content });
+            }
+            infoWindowRef.current.open(map, marker);
           });
 
-          // 유형 분류용 리스트에 저장
+          // 마우스 아웃 시 InfoWindow 닫기
+          window.kakao.maps.event.addListener(marker, 'mouseout', () => {
+            if (infoWindowRef.current) infoWindowRef.current.close();
+          });
+
+          // 마커 클릭 시 상세 정보 표시
+          window.kakao.maps.event.addListener(marker, 'click', () => {
+            if (infoWindowRef.current) infoWindowRef.current.close();
+
+            const newInfoWindow = new window.kakao.maps.InfoWindow({ content });
+            newInfoWindow.open(map, marker);
+            infoWindowRef.current = newInfoWindow;
+
+            setSelectedMarker({ id: place.id }); // 선택된 마커 ID 저장
+            if (onSelectShop) onSelectShop(place.place_name); // 부모로 전달
+          });
+
+          // 상위 컴포넌트로 전달할 데이터 저장
           shopList.push({
             id: place.id,
             name: place.place_name,
@@ -153,27 +162,27 @@ function AutoShopMap({
           });
         });
 
-        // 부모 컴포넌트에 업데이트된 정비소 리스트 전달
-        if (onShopsUpdate) {
-          onShopsUpdate(shopList);
-        }
+        if (onShopsUpdate) onShopsUpdate(shopList);
       },
-      {
-        location: centerCoords, // 중심 좌표 설정
-        radius: 3000, // 반경 설정
-      }
+      { location: centerCoords, radius: 3000 }
     );
   }
 
-  // 마커 이미지 설정
+  // 마커 이미지 생성 함수
   function getMarkerImage(isSelected) {
-    const imageSrc = isSelected ? '/marker-icon-red.png' : '/marker-icon-blue.png'; // 선택된 마커는 빨간색, 나머지는 파란색
+    const imageSrc = isSelected ? '/marker-icon-red.png' : '/marker-icon-blue.png';
     return new window.kakao.maps.MarkerImage(imageSrc, new window.kakao.maps.Size(25, 41), {
       offset: new window.kakao.maps.Point(12, 41),
     });
   }
 
-  return <div id="map" ref={mapRef} style={{ width: '100%', height: '500px' }} />; // 맵 렌더링
+  return (
+    <div
+      id="map"
+      ref={mapRef}
+      style={{ width: '100%', height: '500px' }}
+    />
+  );
 }
 
-export default AutoShopMap; // 컴포넌트 반환
+export default AutoShopMap;

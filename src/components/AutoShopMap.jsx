@@ -13,20 +13,20 @@ function AutoShopMap({
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const hasInitializedRef = useRef(false);
-  const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태 관리
+  const infoWindowRef = useRef(null); 
+  
+  const [selectedMarker, setSelectedMarker] = useState(null); //  선택된 마커 상태 관리
 
-  // 마커 클리어 함수
+  // 기존 마커 제거
   function clearMarkers() {
     markersRef.current.forEach(({ marker }) => marker.setMap(null));
     markersRef.current = [];
   }
 
-  // 컴포넌트가 로드될 때 실행되는 useEffect
+  // 맵 초기화
   useEffect(() => {
-    // 카카오 맵 SDK가 이미 index.html에서 로드되므로, 별도로 로드할 필요 없음
     if (window.kakao?.maps) {
-      console.log("Kakao Maps SDK 로드됨");
-      window.kakao.maps.load(initMap); // 카카오 맵 SDK 로드 후 지도 초기화
+      window.kakao.maps.load(initMap);
     } else {
       console.error("Kakao Maps SDK가 로드되지 않았습니다.");
     }
@@ -38,7 +38,6 @@ function AutoShopMap({
       const container = document.getElementById('map');
       if (!container || !window.kakao) return;
 
-      // 위치 정보 얻어서 지도 초기화
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -50,7 +49,6 @@ function AutoShopMap({
           mapInstanceRef.current = map;
           renderMarkers(map, new window.kakao.maps.LatLng(latitude, longitude));
 
-          // 동적 검색 기능 활성화
           if (enableDynamicSearch) {
             window.kakao.maps.event.addListener(map, 'idle', () => {
               const center = map.getCenter();
@@ -65,23 +63,23 @@ function AutoShopMap({
     }
   }, [keyword, onSelectShop, enableDynamicSearch]);
 
-  // 지도 뷰 타입 변경 감지
+  // 지도 유형 변경
   useEffect(() => {
     if (!mapInstanceRef.current || !window.kakao?.maps) return;
-    const typeId =
-      mapType === 'road'
-        ? window.kakao.maps.MapTypeId.ROADMAP
-        : window.kakao.maps.MapTypeId.HYBRID;
+    const typeId = mapType === 'road'
+      ? window.kakao.maps.MapTypeId.ROADMAP
+      : window.kakao.maps.MapTypeId.HYBRID;
     mapInstanceRef.current.setMapTypeId(typeId);
   }, [mapType]);
 
+  // 키워드나 선택 마커가 바뀌면 리렌더링
   useEffect(() => {
     if (mapInstanceRef.current) {
       renderMarkers(mapInstanceRef.current, mapInstanceRef.current.getCenter());
     }
   }, [keyword, selectedMarker]);
 
-  // 주소 검색 기능
+  // 주소 검색
   useEffect(() => {
     if (!searchAddress || !window.kakao?.maps || !mapInstanceRef.current) return;
 
@@ -89,18 +87,17 @@ function AutoShopMap({
     geocoder.addressSearch(searchAddress, (result, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
         const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-        const map = mapInstanceRef.current;
-
-        map.setCenter(coords);
-        renderMarkers(map, coords);
+        mapInstanceRef.current.setCenter(coords);
+        renderMarkers(mapInstanceRef.current, coords);
       }
     });
   }, [searchAddress]);
 
-  // 마커 렌더링 함수
+  // 마커 생성
   function renderMarkers(map, centerCoords) {
     clearMarkers();
     const ps = new window.kakao.maps.services.Places();
+
     ps.keywordSearch(
       keyword,
       (data, status) => {
@@ -126,20 +123,29 @@ function AutoShopMap({
               ${place.address_name || ''}
             </div>
           `;
-          const infowindow = new window.kakao.maps.InfoWindow({ content });
 
-          window.kakao.maps.event.addListener(marker, 'mouseover', () => infowindow.open(map, marker));
-          window.kakao.maps.event.addListener(marker, 'mouseout', () => infowindow.close());
+          window.kakao.maps.event.addListener(marker, 'mouseover', () => {
+            if (!infoWindowRef.current || infoWindowRef.current.getContent() !== content) {
+              infoWindowRef.current = new window.kakao.maps.InfoWindow({ content });
+            }
+            infoWindowRef.current.open(map, marker);
+          });
+
+          window.kakao.maps.event.addListener(marker, 'mouseout', () => {
+            if (infoWindowRef.current) infoWindowRef.current.close();
+          });
+
           window.kakao.maps.event.addListener(marker, 'click', () => {
-            infowindow.open(map, marker);
+            if (infoWindowRef.current) infoWindowRef.current.close();
+
+            const newInfoWindow = new window.kakao.maps.InfoWindow({ content });
+            newInfoWindow.open(map, marker);
+            infoWindowRef.current = newInfoWindow;
+
             setSelectedMarker({ id: place.id });
-            // 클릭한 마커만 보이도록 처리
-            markersRef.current.forEach(({ marker }) => marker.setMap(null));
-            markersRef.current = [{ marker, id: place.id }];
             if (onSelectShop) onSelectShop(place.place_name);
           });
 
-          // 유형 분류용 리스트에 저장
           shopList.push({
             id: place.id,
             name: place.place_name,
@@ -149,19 +155,13 @@ function AutoShopMap({
           });
         });
 
-        // 부모로 데이터 전달
-        if (onShopsUpdate) {
-          onShopsUpdate(shopList);
-        }
+        if (onShopsUpdate) onShopsUpdate(shopList);
       },
-      {
-        location: centerCoords,
-        radius: 3000,
-      }
+      { location: centerCoords, radius: 3000 }
     );
   }
 
-  // 마커 이미지 설정
+  // 마커 색상 설정
   function getMarkerImage(isSelected) {
     const imageSrc = isSelected ? '/marker-icon-red.png' : '/marker-icon-blue.png';
     return new window.kakao.maps.MarkerImage(imageSrc, new window.kakao.maps.Size(25, 41), {
