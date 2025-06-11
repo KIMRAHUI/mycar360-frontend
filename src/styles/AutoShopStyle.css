@@ -1,17 +1,21 @@
+/* 기본 맵 래퍼 */
 .map-wrapper {
   text-align: center;
   margin-bottom: 1rem;
 }
 
+/* 버튼 영역 */
 .map-controls {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* 1열로만 배치되도록 수정 */
 }
 
-.address-search-btn {
+/* 주소 검색 버튼 */
+.address-search-btn,
+.toggle-maptype-btn {
   background-color: #FFA07A;
   color: white;
   font-weight: bold;
@@ -21,23 +25,17 @@
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s;
+  min-width: 140px;  /* 최소 너비를 설정해줌 */
+  max-width: 200px;  /* 최대 너비 설정 */
+  text-align: center; /* 텍스트 가운데 정렬 */
 }
 
-.address-search-btn:hover {
+.address-search-btn:hover,
+.toggle-maptype-btn:hover {
   background-color: #ff865c;
 }
 
-.current-location-btn {
-  background-color: #89CFF0;
-  color: white;
-  font-weight: bold;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-
+/* 맵 컨테이너 */
 .map-container {
   width: 100%;
   height: 400px;
@@ -45,26 +43,31 @@
   max-width: 700px;
 }
 
+/* 반응형 디자인: 화면 크기가 작을 때 */
 @media (max-width: 480px) {
+  /* 맵 래퍼 */
   .map-wrapper {
     transform: scale(0.9);
     transform-origin: top center;
     padding: 0 0.5rem;
   }
 
+  /* 버튼들이 세로로 정렬되도록 */
   .map-controls {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;  /* 세로 대신 가로로 나열하도록 수정 */
+    gap: 10px;  /* 버튼 사이 간격 조정 */
   }
 
+  /* 맵 크기 조정 */
   .map-container {
     height: 350px;
   }
 
+  /* 버튼 크기 조정 */
   .address-search-btn,
-  .current-location-btn {
+  .toggle-maptype-btn {
     font-size: 0.95rem;
     padding: 0.5rem 1rem;
-    width: 80%;
+    width: 45%;  /* 모바일에서 버튼 넓이를 45%로 조정 */
   }
 }

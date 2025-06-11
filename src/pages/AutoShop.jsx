@@ -6,7 +6,9 @@ import '../styles/AutoShopStyle.css';
 function AutoShop() {
   const [kakaoReady, setKakaoReady] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(''); //주소 상태 추가
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [mapType, setMapType] = useState('road'); // 'road' or 'hybrid'
+  const [shops, setShops] = useState([]);
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '정비소';
 
@@ -37,9 +39,13 @@ function AutoShop() {
     new window.daum.Postcode({
       oncomplete: function (data) {
         alert(`선택한 주소: ${data.address}`);
-        setSelectedAddress(data.address); // 주소 저장 → 지도에 전달
+        setSelectedAddress(data.address);
       },
     }).open();
+  };
+
+  const toggleMapType = () => {
+    setMapType((prev) => (prev === 'road' ? 'hybrid' : 'road'));
   };
 
   return (
@@ -51,13 +57,25 @@ function AutoShop() {
           <button className="address-search-btn" onClick={openAddressSearch}>
             🧭 주소 검색
           </button>
+          <button className="toggle-maptype-btn" onClick={toggleMapType}>
+            {mapType === 'road' ? '🛰️ 스카이뷰 전환' : '🗺️ 일반지도 전환'}
+          </button>
         </div>
 
-        {kakaoReady ? (
-          <AutoShopMap keyword={keyword} searchAddress={selectedAddress} />
-        ) : (
-          <p style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>지도를 불러오는 중...</p>
-        )}
+        <div className="map-and-stats">
+          {kakaoReady ? (
+            <AutoShopMap
+              keyword={keyword}
+              searchAddress={selectedAddress}
+              mapType={mapType}
+              onShopsUpdate={setShops}
+            />
+          ) : (
+            <p style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>
+              지도를 불러오는 중...
+            </p>
+          )}
+        </div>
       </div>
     </main>
   );

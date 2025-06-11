@@ -6,7 +6,33 @@
   margin-top: 1.5rem;
   border-radius: 10px;
 
-  /*모바일에서 마커가 안 보이는 현상 방지용 */
+  /* 모바일에서 마커가 안 보이는 현상 방지용 */
   position: relative;
   z-index: 0;
+  /* 지도 상단 여백이 없도록 기본 여백 제거 */
+  margin: 0;
+}
+
+/* 마커 정보창 예쁘게 스타일링 */
+.kakao-map-info-window {
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  max-width: 300px;
+}
+
+/* 반응형 디자인: 화면 크기가 작을 때 */
+@media (max-width: 768px) {
+  #map {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  #map {
+    height: 350px;
+  }
 }
