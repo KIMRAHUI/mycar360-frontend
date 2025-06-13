@@ -17,11 +17,12 @@ export default function RecommendedSidebar({ isOpen, onClose, onSelectShop }) {
   // 사이드탭이 열릴 때 추천 정비소 API 호출
   useEffect(() => {
     if (isOpen) {
-      axios.get('/api/recommended-shops')
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/recommended-shops`)
         .then(res => setShops(res.data))
         .catch(err => console.error('🚨 추천 정비소 불러오기 실패:', err));
     }
   }, [isOpen]);
+
 
   // 정렬된 정비소 목록
   const sortedShops = [...shops].sort((a, b) =>
@@ -78,7 +79,7 @@ export default function RecommendedSidebar({ isOpen, onClose, onSelectShop }) {
               <h4>{shop.name}</h4>
               <p>{shop.address}</p>
               <p><strong>📞 {shop.phone}</strong></p>
-              <p>⭐ {Number(shop.rating ?? 0).toFixed(1)}</p>
+              <p>⭐ {(shop.rating ?? 0).toFixed(1)}</p>
               <div className="tags">
                 {(shop.tags ?? []).map((tag, idx) => (
                   <span key={idx} className="tag">{tag}</span>
