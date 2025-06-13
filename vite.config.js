@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => ({
     port: 5177,
     ...(mode === 'development' && {
       proxy: {
-        '/api': 'http://localhost:5000',
+        '/api': 'http://localhost:3000',
       },
     }),
   },

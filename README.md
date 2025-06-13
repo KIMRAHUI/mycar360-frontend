@@ -13,7 +13,6 @@
 - Axios
 - React Router
 - Chart.js
-- Lottie
 - Kakao Map API
 - Daum 주소 검색 API
 - Coupang 파트너스 상품 링크 기반 연동
@@ -55,18 +54,50 @@
 
 ---
 
+## 🗺️ 정비소 지도 기능 개선 (2025-06)
+- 주소 검색 기능: 다음 주소 검색 API 연동으로 지도 이동
+- 스카이뷰/일반뷰 전환: 버튼 클릭으로 지도 유형 토글
+- 정비소 마커 클릭 시:
+  - 🔴 해당 마커만 빨간색으로 강조
+  - 📍 클릭된 마커에만 상세정보 InfoWindow 표시
+  - ✅ 이전 마커의 상세정보는 자동으로 닫히며 중복 표시 방지
+- 모바일 최적화:
+  - 버튼 좌우 정렬 유지 (`1행 2열`)
+  - 가로폭 넘지 않도록 버튼 크기 최적화
+  - 반응형 스타일로 웹/모바일 모두 정돈된 UI 제공
+
+---
+
+## ⭐ 추천 정비소 기능 추가 (2025-06-13)
+- `recommended_auto_shops` 테이블 기반으로 추천 정비소 표시
+- "추천 정비소 보기" 버튼 클릭 시 좌측 슬라이딩 탭 오픈
+- 슬라이드 탭 구성:
+  - 상호명 / 태그 / 전화번호 / 주소 / 썸네일 출력
+  - 5개씩 페이지네이션 적용
+  - 평점 기준 정렬 토글 (높은 순 ↔ 낮은 순)
+- 지도 연동 기능:
+  - 각 카드 클릭 시 지도 중심 이동
+  - ⭐ 기본 상태: 노란 별 마커
+  - 🟠 클릭 시: 주황색 별 마커 + 인포윈도우 노출
+- 마커 중복 제거 및 단일 선택만 허용 (사용자 편의성 강화)
+
+---
+
 ## 📂 프로젝트 구조
 ```
 src/
-┣ components/ # 공통 UI 컴포넌트 (헤더, 슬라이더 등)
+┣ components/ # 공통 UI 컴포넌트 (헤더, 슬라이더, 지도 등)
 ┣ pages/ # 주요 페이지 (Home, MyPage, Signup 등)
 ┣ api/ # Axios 요청 모듈
 ┣ styles/ # CSS 파일
 ┣ App.jsx # 라우팅 및 전역 컴포넌트
 ┗ main.jsx # 앱 진입점
 public/
-┣ images/ # 정적 이미지 파일
-┗ index.html
+┣ images/ # 정적 이미지 (마커, 배너 등)
+┣ marker-icon-blue.png
+┣ marker-icon-red.png
+┣ marker_star_yellow.png
+┗ marker_star_orange.png
 .env # 환경 변수 (VITE_API_BASE_URL 등)
 vite.config.js # Vite 설정 파일
 vercel.json # 배포 설정 (Redirects)
