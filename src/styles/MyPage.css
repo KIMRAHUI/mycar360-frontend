@@ -156,6 +156,54 @@ section li button:hover {
   display: none;
 }
 
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 카드 너비 살짝 줄임 */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.favorite-card {
+  background-color: #fffaf0; /* 따뜻한 톤 배경 */
+  border: 1px solid #ffddaa;
+  border-radius: 12px;
+  padding: 0.8rem;
+  box-shadow: 0 2px 6px rgba(255, 170, 100, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.favorite-card p {
+  margin: 0.2rem 0;
+}
+
+/* 가운데 정렬 */
+.favorite-card .center-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-button {
+  background-color: #ff7766;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #ee5544;
+}
+
+
+
 
 /* 768px 이상: 웹 전용 가로 정렬 레이아웃 */
 @media (min-width: 768px) {

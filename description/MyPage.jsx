@@ -1,25 +1,38 @@
+// 전체 MyPage.jsx (주석 추가 완료)
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AutoShopMap from '../components/AutoShopMap'; // 정비소 지도 컴포넌트
-import axios from '../api/axios'; // axios 인스턴스
-import '../styles/MyPage.css'; // 마이페이지 전용 스타일
+import AutoShopMap from '../components/AutoShopMap';
+import axios from '../api/axios';
+import '../styles/MyPage.css';
 
 function MyPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 상태 정의
   const [user, setUser] = useState(null); // 사용자 정보
   const [vehicle, setVehicle] = useState(null); // 차량 정보
-  const [nicknameInput, setNicknameInput] = useState(''); // 닉네임 입력
-  const [nextInspections, setNextInspections] = useState([]); // 다음 점검 예측 목록
+  const [nicknameInput, setNicknameInput] = useState(''); // 닉네임 입력값
+  const [nextInspections, setNextInspections] = useState([]); // 다음 점검 예측 정보
   const [reservationDate, setReservationDate] = useState(''); // 예약 날짜
-  const [reservationShop, setReservationShop] = useState(''); // 예약 정비소 이름
+  const [reservationShop, setReservationShop] = useState(''); // 예약 정비소명
   const [reservations, setReservations] = useState([]); // 예약 목록
-  const [favorites, setFavorites] = useState([]); // 찜 항목
+  const [favorites, setFavorites] = useState([]); // 찜 항목 목록
   const [userAddress, setUserAddress] = useState(''); // 사용자 주소
 
-  // ✅ 차량번호로 사용자 정보 불러오기
+  // 찜 항목 삭제 처리
+  const handleDeleteFavorite = async (inspectionItemId) => {
+    try {
+      const res = await axios.delete(`/api/favorites/${user.id}/${inspectionItemId}`);
+      if (res.status === 200) {
+        const updated = favorites.filter(f => f.id !== inspectionItemId);
+        setFavorites(updated);
+      }
+    } catch (err) {
+      console.error('❌ 찜 삭제 실패:', err);
+      alert('찜 항목 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 차량번호로 사용자 정보 가져오기
   const fetchUserInfoByCarNumber = async (carNumber) => {
     try {
       const res = await axios.get(`/api/user-by-car/${carNumber}`);
@@ -27,14 +40,14 @@ function MyPage() {
         setUser(res.data);
         setNicknameInput(res.data.nickname);
         setUserAddress(res.data.address);
-        fetchFavorites(res.data.id); // 찜 항목 로드
+        fetchFavorites(res.data.id);
       }
     } catch (err) {
       console.error('❌ 사용자 정보 불러오기 실패:', err);
     }
   };
 
-  // ✅ 찜 항목 가져오기
+  // 찜 항목 가져오기
   const fetchFavorites = async (userId) => {
     try {
       const res = await axios.get(`/api/favorites/${userId}`);
@@ -44,7 +57,15 @@ function MyPage() {
     }
   };
 
-  // ✅ 페이지 진입 시 로컬스토리지에서 사용자 정보 복원 및 데이터 로드
+  // 예약 목록 로드
+  useEffect(() => {
+    const stored = localStorage.getItem('myReservations');
+    if (stored) {
+      setReservations(JSON.parse(stored));
+    }
+  }, []);
+
+  // 로그인 상태 확인 및 차량/사용자 정보 로딩
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (saved) {
@@ -60,7 +81,7 @@ function MyPage() {
     }
   }, [location]);
 
-  // ✅ 차량 정보 불러오기
+  // 차량 정보 로드
   const fetchVehicleInfo = async (carNumber) => {
     try {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
@@ -70,20 +91,17 @@ function MyPage() {
       const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
       const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
 
-      // 이력 정렬 (최신순)
-      const sortedHistory = history.sort((a, b) => extractDateFromText(b) - extractDateFromText(a));
-
       setVehicle({
         ...data,
-        parsedParts: parts.slice(0, 3), // 최근 3개 부품
-        parsedHistory: sortedHistory.slice(0, 3), // 최근 3개 점검
+        parsedParts: parts.slice(0, 3), // 최근 부품 3개
+        parsedHistory: history.slice(0, 3), // 최근 점검 이력 3개
       });
     } catch (err) {
       console.error('❌ 차량 정보 로딩 실패:', err);
     }
   };
 
-  // ✅ 다음 점검 예측 불러오기
+  // 다음 점검 예측 정보 로드
   const fetchNextInspections = async (carNumber) => {
     try {
       const res = await axios.get(`/api/next-inspection/${carNumber}`);
@@ -95,47 +113,58 @@ function MyPage() {
     }
   };
 
-  // ✅ 'YYYY.MM' 형식 날짜 파싱
-  const extractDateFromText = (text) => {
-    const match = text.match(/\d{4}\.\d{2}/);
-    if (!match) return null;
-    const [year, month] = match[0].split('.').map(Number);
-    return new Date(year, month - 1);
+  // 닉네임 수정
+  const handleNicknameChange = async () => {
+    try {
+      const updatedUser = { ...user, nickname: nicknameInput };
+      setUser(updatedUser);
+      localStorage.setItem('car_user', JSON.stringify(updatedUser));
+
+      const res = await axios.post(`/api/users/${user.id}/nickname`, {
+        nickname: nicknameInput,
+      });
+
+      if (res.data.success) {
+        alert('닉네임이 성공적으로 변경되었습니다!');
+      } else {
+        alert('닉네임 변경은 저장되었으나 응답에 문제가 있습니다.');
+      }
+    } catch (err) {
+      console.error('❌ 닉네임 변경 실패:', err);
+      alert('닉네임 변경 중 오류가 발생했습니다.');
+    }
   };
 
-  // ✅ 닉네임 변경
-  const handleNicknameChange = () => {
-    const updatedUser = { ...user, nickname: nicknameInput };
-    setUser(updatedUser);
-    localStorage.setItem('car_user', JSON.stringify(updatedUser));
-    alert('닉네임이 변경되었습니다!');
-  };
-
-  // ✅ 로그아웃 처리
+  // 로그아웃 처리
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
   };
 
-  // ✅ 예약 등록
+  // 예약 저장 처리
   const handleReservation = () => {
     if (!reservationDate || !reservationShop) {
       return alert('예약 날짜와 정비소를 모두 선택해주세요!');
     }
     const newEntry = `${reservationDate} - ${reservationShop}`;
+    const existing = JSON.parse(localStorage.getItem('myReservations')) || [];
+    const updated = [...existing, newEntry];
+    localStorage.setItem('myReservations', JSON.stringify(updated));
     setReservations([...reservations, newEntry]);
     setReservationDate('');
     setReservationShop('');
+    alert('예약이 완료되었습니다.\n해당 정비소에서 순차적으로 연락드릴 예정이며,\n정비소 사정에 따라 일정이 변동될 수 있습니다.');
   };
 
-  // ✅ 예약 삭제
+  // 예약 삭제 처리
   const deleteReservation = (idx) => {
     const newList = [...reservations];
     newList.splice(idx, 1);
     setReservations(newList);
+    localStorage.setItem('myReservations', JSON.stringify(newList)); // ✅ localStorage 동기화
   };
 
-  // ✅ 30일 내 찜 항목 필터링
+  // 30일 내 찜 항목 필터링
   const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
   const now = new Date();
   const validFavorites = favorites.filter(fav => {
@@ -144,14 +173,15 @@ function MyPage() {
     return now - createdDate < THIRTY_DAYS_MS;
   });
 
-  // 로딩 중일 경우 null 렌더링
+  // 렌더링 조건
   if (!user || !vehicle) return null;
 
   return (
     <div className="mypage-container">
+      {/* 사용자 인사 */}
       <h2>{user.nickname}, 안녕하세요!</h2>
 
-      {/* 차량 기본 정보 */}
+      {/* 내 차량 정보 */}
       <section>
         <h3>🚗 내 차량 정보</h3>
         <p>차량번호: {user.car_number}</p>
@@ -166,8 +196,10 @@ function MyPage() {
         <h3>🔧 최근 부품 교체 이력</h3>
         {vehicle.parsedParts?.length > 0 ? (
           <ul>
-            {vehicle.parsedParts.map((item, idx) => (
-              <li key={idx}>{item}</li>
+            {vehicle.parsedParts.map((item) => (
+              <li key={`${item.partName}-${item.replacedAt}`}>
+                {item.partName} ({item.replacedAt})
+              </li>
             ))}
           </ul>
         ) : (
@@ -180,8 +212,10 @@ function MyPage() {
         <h3>💪 최근 점검 이력</h3>
         {vehicle.parsedHistory?.length > 0 ? (
           <ul>
-            {vehicle.parsedHistory.map((item, idx) => (
-              <li key={idx}>{item}</li>
+            {vehicle.parsedHistory.map((item) => (
+              <li key={`${item.label}-${item.performedAt}`}>
+                {item.label} ({item.performedAt})
+              </li>
             ))}
           </ul>
         ) : (
@@ -195,7 +229,7 @@ function MyPage() {
         {nextInspections.length > 0 ? (
           <ul>
             {nextInspections.map((item, idx) => (
-              <li key={idx}>
+              <li key={`${item.title}-${idx}`}>
                 <strong>{item.title}</strong> → 마지막 점검: {item.last_date}, 주기: {item.recommended_cycle}
               </li>
             ))}
@@ -240,7 +274,7 @@ function MyPage() {
           {reservations.length > 0 ? (
             <ul>
               {reservations.map((entry, idx) => (
-                <li key={idx} style={{ padding: '0.4rem 0' }}>
+                <li key={`${entry}-${idx}`} style={{ padding: '0.4rem 0' }}>
                   {entry} <button onClick={() => deleteReservation(idx)}>❌</button>
                 </li>
               ))}
@@ -251,20 +285,28 @@ function MyPage() {
         </div>
       </section>
 
-      {/* 찜한 항목 */}
+      {/* 찜한 점검 항목 */}
       <section>
         <h3>❤️ 찜한 점검 항목</h3>
         {validFavorites.length > 0 ? (
           <>
-            <p style={{ fontSize: '0.9rem', color: '#999', marginBottom: '0.8rem' }}>
-              찜한 항목은 30일 후 자동으로 목록에서 사라집니다.
-            </p>
             <div className="favorites-grid">
-              {validFavorites.map((fav) => (
-                <div key={fav.inspection_item_id} className="favorite-card">
+              {validFavorites.map((fav, idx) => (
+                <div key={`${fav.id}-${idx}`} className="favorite-card">
                   <p><strong>{fav.title}</strong></p>
                   <p>카테고리: {fav.category}</p>
                   <p>설명: {fav.description}</p>
+                  <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center' }}>
+                    찜한 날짜: {new Date(fav.created_at).toLocaleDateString('ko-KR')}
+                  </p>
+                  <div className="center-button">
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteFavorite(fav.id)}
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -274,7 +316,7 @@ function MyPage() {
         )}
       </section>
 
-      {/* 닉네임 수정 및 로그아웃 */}
+      {/* 닉네임 및 로그아웃 */}
       <section className="settings">
         <h3>⚙️ 내 정보 관리</h3>
         <div className="nickname-section">

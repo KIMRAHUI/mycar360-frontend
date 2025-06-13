@@ -2,35 +2,39 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/history.css';
 
+// 환경변수에서 백엔드 API 주소 가져오기
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function History() {
   const navigate = useNavigate();
-  const [history, setHistory] = useState([]);
-  const [carNumber, setCarNumber] = useState('');
+  const [history, setHistory] = useState([]); // 전체 이력 데이터
+  const [carNumber, setCarNumber] = useState(''); // 차량번호
+  const [userId, setUserId] = useState(''); // 사용자 ID
 
-  // 상단 신규 등록용 form 상태
+  // 등록 및 수정 입력폼 상태
   const [form, setForm] = useState({
     date: '',
     inspection_type: '',
     shop_name: '',
-    note: ''
+    note: '',
+    type: '점검'
   });
 
-  // 수정용 별도 form 상태
   const [editForm, setEditForm] = useState({
     date: '',
     inspection_type: '',
     shop_name: '',
-    note: ''
+    note: '',
+    type: '점검'
   });
 
-  const [editId, setEditId] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [sortNewest, setSortNewest] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [editId, setEditId] = useState(null); // 수정 대상 ID
+  const [searchText, setSearchText] = useState(''); // 검색어
+  const [sortNewest, setSortNewest] = useState(true); // 정렬 기준
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const itemsPerPage = 5; // 페이지당 항목 수
 
+  // 로그인 여부 확인 및 초기 데이터 로딩
   useEffect(() => {
     const saved = localStorage.getItem('car_user');
     if (!saved) {
@@ -48,6 +52,7 @@ function History() {
       }
 
       setCarNumber(parsed.carNumber);
+      setUserId(parsed.id);
       loadHistory(parsed.carNumber);
     } catch (e) {
       console.error('car_user 파싱 오류:', e);
@@ -55,6 +60,7 @@ function History() {
     }
   }, [navigate]);
 
+  // 정비 이력 로드
   const loadHistory = (carNum) => {
     fetch(`${baseUrl}/api/history/car/${carNum}`)
       .then(res => res.json())
@@ -65,6 +71,7 @@ function History() {
           return;
         }
 
+        // 동일 항목 중복 제거
         const unique = [];
         const map = new Map();
         data.forEach(item => {
@@ -83,14 +90,17 @@ function History() {
       });
   };
 
+  // 입력값 변경 핸들러 (등록)
   const handleFormChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // 입력값 변경 핸들러 (수정)
   const handleEditFormChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
+  // 등록 및 수정 제출
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.date || !form.inspection_type) return;
@@ -101,45 +111,56 @@ function History() {
       : `${baseUrl}/api/history`;
 
     const body = editId
-      ? { ...form }
-      : { car_number: carNumber, ...form };
+      ? { ...editForm, car_number: carNumber, user_id: userId }
+      : { car_number: carNumber, user_id: userId, ...form };
 
     fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     }).then(() => {
-      setForm({ date: '', inspection_type: '', shop_name: '', note: '' });
+      setForm({ date: '', inspection_type: '', shop_name: '', note: '', type: '점검' });
       setEditId(null);
       loadHistory(carNumber);
     });
   };
 
+  // 수정 버튼 클릭 시 기존 값 세팅
   const handleEdit = (item) => {
     setEditId(item.id);
     setEditForm({
       date: item.date ? item.date.slice(0, 10) : '',
       inspection_type: item.inspection_type || '',
       shop_name: item.shop_name || '',
-      note: item.note || ''
+      note: item.note || '',
+      type: item.type || '점검'
     });
   };
 
+  // 수정 제출
   const handleEditSubmit = (e) => {
     e.preventDefault();
     if (!editForm.date || !editForm.inspection_type) return;
 
+    const body = {
+      ...editForm,
+      car_number: carNumber,
+      user_id: userId,
+      type: editForm.type || '점검'
+    };
+
     fetch(`${baseUrl}/api/history/${editId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm)
+      body: JSON.stringify(body)
     }).then(() => {
-      setEditForm({ date: '', inspection_type: '', shop_name: '', note: '' });
+      setEditForm({ date: '', inspection_type: '', shop_name: '', note: '', type: '점검' });
       setEditId(null);
       loadHistory(carNumber);
     });
   };
 
+  // 삭제 처리
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       fetch(`${baseUrl}/api/history/${id}`, {
@@ -148,8 +169,7 @@ function History() {
     }
   };
 
-  // ... 기존 필터, 정렬, 페이지네이션 로직 유지 ...
-
+  // 정렬 및 검색 필터링
   const sortedHistory = [...history].sort((a, b) => {
     return sortNewest
       ? new Date(b.date) - new Date(a.date)
@@ -162,6 +182,7 @@ function History() {
     (item.note || '').includes(searchText)
   );
 
+  // 페이지네이션 계산
   const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -177,55 +198,27 @@ function History() {
     <main className="history-container">
       <h2>정비 이력</h2>
 
-      {/* 신규 등록용 폼 */}
+      {/* 등록/수정 입력 폼 */}
       <form className="history-form" onSubmit={handleSubmit}>
         <p className="mobile-hint">📅 점검일을 선택해주세요</p>
-        <input
-          type="date"
-          name="date"
-          value={form.date}
-          onChange={handleFormChange}
-          required
-        />
-        <input
-          type="text"
-          name="inspection_type"
-          placeholder="점검 항목"
-          value={form.inspection_type}
-          onChange={handleFormChange}
-          required
-        />
-        <input
-          type="text"
-          name="shop_name"
-          placeholder="정비소 이름"
-          value={form.shop_name}
-          onChange={handleFormChange}
-        />
-        <input
-          type="text"
-          name="note"
-          placeholder="메모"
-          value={form.note}
-          onChange={handleFormChange}
-        />
+        <input type="date" name="date" value={form.date} onChange={handleFormChange} required />
+        <input type="text" name="inspection_type" placeholder="점검 항목" value={form.inspection_type} onChange={handleFormChange} required />
+        <select name="type" value={form.type} onChange={handleFormChange}>
+          <option value="점검">점검</option>
+          <option value="교체">교체</option>
+        </select>
+        <input type="text" name="shop_name" placeholder="정비소 이름" value={form.shop_name} onChange={handleFormChange} />
+        <input type="text" name="note" placeholder="메모" value={form.note} onChange={handleFormChange} />
         <button type="submit">{editId ? '수정' : '등록'}</button>
       </form>
 
-      {/* 검색 및 정렬 UI */}
+      {/* 검색 및 정렬 */}
       <div className="history-controls">
-        <input
-          type="text"
-          placeholder="점검 항목, 정비소, 메모 검색"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-        <button onClick={() => setSortNewest(!sortNewest)}>
-          {sortNewest ? '최신순' : '과거순'} 보기 전환
-        </button>
+        <input type="text" placeholder="점검 항목, 정비소, 메모 검색" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+        <button onClick={() => setSortNewest(!sortNewest)}>{sortNewest ? '최신순' : '과거순'} 보기 전환</button>
       </div>
 
-      {/* 이력 리스트 */}
+      {/* 이력 리스트 출력 */}
       {currentItems.length === 0 ? (
         <p>조건에 맞는 이력이 없습니다.</p>
       ) : (
@@ -236,45 +229,25 @@ function History() {
               <div className="timeline-content">
                 {editId === item.id ? (
                   <>
-                    <input
-                      type="date"
-                      name="date"
-                      value={editForm.date}
-                      onChange={handleEditFormChange}
-                    />
-                    <input
-                      type="text"
-                      name="inspection_type"
-                      value={editForm.inspection_type}
-                      onChange={handleEditFormChange}
-                    />
-                    <input
-                      type="text"
-                      name="shop_name"
-                      value={editForm.shop_name}
-                      onChange={handleEditFormChange}
-                    />
-                    <input
-                      type="text"
-                      name="note"
-                      value={editForm.note}
-                      onChange={handleEditFormChange}
-                    />
+                    <input type="date" name="date" value={editForm.date} onChange={handleEditFormChange} />
+                    <input type="text" name="inspection_type" value={editForm.inspection_type} onChange={handleEditFormChange} />
+                    <select name="type" value={editForm.type} onChange={handleEditFormChange}>
+                      <option value="점검">점검</option>
+                      <option value="교체">교체</option>
+                    </select>
+                    <input type="text" name="shop_name" value={editForm.shop_name} onChange={handleEditFormChange} />
+                    <input type="text" name="note" value={editForm.note} onChange={handleEditFormChange} />
                     <div className="timeline-actions">
                       <button onClick={handleEditSubmit}>저장</button>
-                      <button
-                        onClick={() => {
-                          setEditId(null);
-                          setEditForm({ date: '', inspection_type: '', shop_name: '', note: '' });
-                        }}
-                      >
-                        취소
-                      </button>
+                      <button onClick={() => {
+                        setEditId(null);
+                        setEditForm({ date: '', inspection_type: '', shop_name: '', note: '', type: '점검' });
+                      }}>취소</button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <strong>{item.inspection_type}</strong> - {item.shop_name}<br />
+                    <strong>[{item.type}] {item.inspection_type}</strong> - {item.shop_name}<br />
                     <span className="note">{item.note}</span>
                     <div className="timeline-actions">
                       <button onClick={() => handleEdit(item)}>수정</button>
