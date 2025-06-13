@@ -78,7 +78,7 @@ export default function RecommendedSidebar({ isOpen, onClose, onSelectShop }) {
               <h4>{shop.name}</h4>
               <p>{shop.address}</p>
               <p><strong>📞 {shop.phone}</strong></p>
-              <p>⭐ {(shop.rating ?? 0).toFixed(1)}</p>
+              <p>⭐ {Number(shop.rating ?? 0).toFixed(1)}</p>
               <div className="tags">
                 {(shop.tags ?? []).map((tag, idx) => (
                   <span key={idx} className="tag">{tag}</span>
