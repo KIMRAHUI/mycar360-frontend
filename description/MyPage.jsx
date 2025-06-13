@@ -9,7 +9,7 @@ function MyPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null); // 사용자 정보
-  const [vehicle, setVehicle] = useState(null); // 차량 정보
+  const [vehicle, setVehicle] = useState({}); // 차량 정보
   const [nicknameInput, setNicknameInput] = useState(''); // 닉네임 입력값
   const [nextInspections, setNextInspections] = useState([]); // 다음 점검 예측 정보
   const [reservationDate, setReservationDate] = useState(''); // 예약 날짜
@@ -56,6 +56,8 @@ function MyPage() {
       console.error('❌ 찜한 항목 불러오기 실패:', err);
     }
   };
+
+  
 
   // 예약 목록 로드
   useEffect(() => {
@@ -185,7 +187,7 @@ function MyPage() {
       <section>
         <h3>🚗 내 차량 정보</h3>
         <p>차량번호: {user.car_number}</p>
-        <p>차종: {user.vehicle_type || '정보 없음'}</p>
+        <p>차종: {user.my_vehicle || '정보 없음'}</p>
         <p>연식: {vehicle.year}</p>
         <p>주소: {userAddress || '정보 없음'}</p>
         <p>인증상태: {user.verified ? '완료됨' : '미완료'}</p>
