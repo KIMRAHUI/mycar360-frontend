@@ -1,0 +1,15 @@
+[33m6ee0223[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m 🐛 Fix: validFavorites 누락으로 인한 오류 → favorites로 교체
+[33m7cb59ca[m ♻️ 30일 필터링 로직 제거 및 찜 항목 전체 표시로 변경
+[33m76a6ccc[m Merge branch 'main' of https://github.com/KIMRAHUI/mycar360-frontend
+[33ma87c049[m 🚗 Fix: 차량 정보에서 vehicle_type → my_vehicle로 변경
+[33mc33116b[m Delete .env
+[33m92aabab[m 🔧 Update inspection logic, MyPage rendering, and map marker features
+[33m06cb1b2[m 추천 정비소 API 주소 VITE 환경변수 기반으로 수정
+[33m357b461[m Fix: 추천 정비소 이미지/별점 출력 오류 및 null 안전 처리
+[33m91fb773[m 추천 정비소 사이드바 예외 처리 및 렌더링 안정화
+[33m9b9b2ec[m 추천 정비소 기능 구현 및 지도 마커 연동, README 업데이트
+[33m70b8e1d[m 🗺️ 정비소 지도 마커 클릭 시 상세 정보 단일 표시 및 마커 강조 색상 적용
+[33m76b928a[m AutoShopMap 기능 수정, 지도 UI 컴포넌트 업데이트 및 관련 스타일 수정
+[33ma2a67a3[m 💄 모바일 모달 위치 개선 및 InspectionModal 분리 적용
+[33m1112395[m 💄 Inspection 페이지 리팩토링 및 모달 슬라이드 이미지 추가
+[33m7f92e7e[m chore: ignore .env files and stop tracking
