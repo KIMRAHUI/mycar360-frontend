@@ -166,14 +166,6 @@ function MyPage() {
     localStorage.setItem('myReservations', JSON.stringify(newList)); // ✅ localStorage 동기화
   };
 
-  // 30일 내 찜 항목 필터링
-  const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-  const now = new Date();
-  const validFavorites = favorites.filter(fav => {
-    if (!fav.created_at) return true;
-    const createdDate = new Date(fav.created_at);
-    return now - createdDate < THIRTY_DAYS_MS;
-  });
 
   // 렌더링 조건
   if (!user || !vehicle) return null;
