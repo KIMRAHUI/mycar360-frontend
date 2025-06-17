@@ -57,7 +57,7 @@ function MyPage() {
     }
   };
 
-  
+
 
   // 예약 목록 로드
   useEffect(() => {
@@ -280,35 +280,35 @@ function MyPage() {
       </section>
 
       {/* 찜한 점검 항목 */}
+      {/* 찜한 점검 항목 */}
       <section>
         <h3>❤️ 찜한 점검 항목</h3>
-        {validFavorites.length > 0 ? (
-          <>
-            <div className="favorites-grid">
-              {validFavorites.map((fav, idx) => (
-                <div key={`${fav.id}-${idx}`} className="favorite-card">
-                  <p><strong>{fav.title}</strong></p>
-                  <p>카테고리: {fav.category}</p>
-                  <p>설명: {fav.description}</p>
-                  <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center' }}>
-                    찜한 날짜: {new Date(fav.created_at).toLocaleDateString('ko-KR')}
-                  </p>
-                  <div className="center-button">
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeleteFavorite(fav.id)}
-                    >
-                      삭제
-                    </button>
-                  </div>
+        {favorites.length > 0 ? (
+          <div className="favorites-grid">
+            {favorites.map((fav, idx) => (
+              <div key={`${fav.id}-${idx}`} className="favorite-card">
+                <p><strong>{fav.title}</strong></p>
+                <p>카테고리: {fav.category}</p>
+                <p>설명: {fav.description}</p>
+                <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center' }}>
+                  찜한 날짜: {new Date(fav.created_at).toLocaleDateString('ko-KR')}
+                </p>
+                <div className="center-button">
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteFavorite(fav.id)}
+                  >
+                    삭제
+                  </button>
                 </div>
-              ))}
-            </div>
-          </>
+              </div>
+            ))}
+          </div>
         ) : (
           <p>찜한 항목이 없습니다.</p>
         )}
       </section>
+
 
       {/* 닉네임 및 로그아웃 */}
       <section className="settings">
