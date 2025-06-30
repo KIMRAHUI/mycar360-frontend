@@ -151,7 +151,7 @@ const StatisticsModal = ({ onClose }) => {
             const label = context.label;
             const value = context.raw; // ⭕ undefined 방지
             if (typeof value !== 'number') return `${label}: 데이터 없음`;
-            return `${label}: ${value}% 선택`;
+            return `${label}: ${value}% 추천`;
           },
         },
       },
@@ -179,7 +179,7 @@ const StatisticsModal = ({ onClose }) => {
             평균 점검 비용
           </button>
           <button className={activeTab === 3 ? 'active' : ''} onClick={() => setActiveTab(3)}>
-            자주 검색된 항목
+            추천 점검 항목
           </button>
         </div>
 

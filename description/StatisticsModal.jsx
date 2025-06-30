@@ -13,13 +13,11 @@ import {
 } from 'chart.js';
 import './StatisticsModal.css';
 
-// Chart.js에 사용할 요소들 등록
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, BarElement, ArcElement, Tooltip, Legend);
 
 const StatisticsModal = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState(0); // 현재 선택된 탭 상태
+  const [activeTab, setActiveTab] = useState(0);
 
-  // 계절별 미점검 사고 건수 데이터 (Line Chart)
   const seasonalAccidentData = {
     labels: ['봄', '여름', '장마', '가을', '겨울', '한파'],
     datasets: [
@@ -60,7 +58,6 @@ const StatisticsModal = ({ onClose }) => {
     },
   };
 
-  // 가성비 인기 차량 순위 데이터 (Bar Chart)
   const popularCarData = {
     labels: ['아반떼', 'K3', '스파크', 'XM3', '캐스퍼', '레이', '베뉴', '티볼리', '코나', '트레일블레이저'],
     datasets: [
@@ -100,7 +97,6 @@ const StatisticsModal = ({ onClose }) => {
     },
   };
 
-  // 평균 점검 비용 데이터 (Doughnut Chart)
   const costData = {
     labels: ['엔진오일', '타이어', '브레이크 패드', '와이퍼', '에어컨 필터'],
     datasets: [
@@ -125,7 +121,7 @@ const StatisticsModal = ({ onClose }) => {
         callbacks: {
           label: function (context) {
             const item = context.label;
-            const value = context.raw;
+            const value = context.raw; // ⭕ NaN 방지
             if (typeof value !== 'number') return `${item}: 데이터 없음`;
             return `${item}: ₩${value.toLocaleString()}원`;
           },
@@ -134,7 +130,6 @@ const StatisticsModal = ({ onClose }) => {
     },
   };
 
-  // 사용자들이 자주 검색한 점검 항목 (Bar Chart)
   const commonItemsData = {
     labels: ['냉각수 보충', '배터리 교체', '타이어 점검', '에어컨 점검', '브레이크 점검'],
     datasets: [
@@ -154,9 +149,9 @@ const StatisticsModal = ({ onClose }) => {
         callbacks: {
           label: function (context) {
             const label = context.label;
-            const value = context.raw;
+            const value = context.raw; // ⭕ undefined 방지
             if (typeof value !== 'number') return `${label}: 데이터 없음`;
-            return `${label}: ${value}% 선택`;
+            return `${label}: ${value}% 추천`;
           },
         },
       },
@@ -166,7 +161,6 @@ const StatisticsModal = ({ onClose }) => {
   return (
     <div className="statistics-modal-overlay">
       <div className="statistics-modal">
-        {/* 모달 상단 */}
         <div className="modal-header">
           <h2>차량 점검 통계</h2>
           <button onClick={onClose} className="close-button">
@@ -174,7 +168,6 @@ const StatisticsModal = ({ onClose }) => {
           </button>
         </div>
 
-        {/* 탭 버튼 */}
         <div className="tab-buttons">
           <button className={activeTab === 0 ? 'active' : ''} onClick={() => setActiveTab(0)}>
             계절별 사고
@@ -186,11 +179,10 @@ const StatisticsModal = ({ onClose }) => {
             평균 점검 비용
           </button>
           <button className={activeTab === 3 ? 'active' : ''} onClick={() => setActiveTab(3)}>
-            자주 검색된 항목
+            추천 점검 항목
           </button>
         </div>
 
-        {/* 차트 영역 */}
         {activeTab !== 2 && (
           <div className="chart-area">
             {activeTab === 0 && <Line data={seasonalAccidentData} options={seasonalAccidentOptions} />}
@@ -199,7 +191,6 @@ const StatisticsModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* 도넛 차트 영역 */}
         {activeTab === 2 && (
           <div className="doughnut-area">
             <Doughnut data={costData} options={doughnutOptions} />
