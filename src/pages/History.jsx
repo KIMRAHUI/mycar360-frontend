@@ -43,26 +43,30 @@ function History() {
       return;
     }
 
-    try {
-      const parsed = JSON.parse(saved);
-      if (!parsed.carNumber) {
-        alert('차량 정보가 없습니다.');
-        navigate('/');
-        return;
-      }
+  try {
+    const parsed = JSON.parse(saved);
 
-      setCarNumber(parsed.carNumber);
-      setUserId(parsed.id);
-      loadHistory(parsed.carNumber);
-    } catch (e) {
-      console.error('car_user 파싱 오류:', e);
+    // ✅ car_number → carNumber로 보정
+    const carNum = parsed.carNumber || parsed.car_number;
+
+    if (!carNum) {
+      alert('차량 정보가 없습니다.');
       navigate('/');
+      return;
     }
-  }, [navigate]);
+
+    setCarNumber(carNum);
+    setUserId(parsed.id);
+    loadHistory(carNum);
+  } catch (e) {
+    console.error('car_user 파싱 오류:', e);
+    navigate('/');
+  }
+}, [navigate]);
 
   // 정비 이력 로드
   const loadHistory = (carNum) => {
-    fetch(`${baseUrl}/api/history/car/${carNum}`)
+    fetch(`${baseUrl}/history/car/${carNum}`)
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
