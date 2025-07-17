@@ -40,7 +40,7 @@ function Login({ setUser }) {
     try {
       // ✅ 백엔드 로그인 요청
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/login`,
         { phone_number: phoneNumber }
       );
 
