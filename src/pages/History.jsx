@@ -66,7 +66,7 @@ function History() {
 
   // 정비 이력 로드
   const loadHistory = (carNum) => {
-    fetch(`${baseUrl}/history/car/${carNum}`)
+    fetch(`${baseUrl}/api/history/car/${carNum}`)
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
