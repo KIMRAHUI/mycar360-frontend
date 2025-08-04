@@ -190,11 +190,12 @@ function MyPage() {
         <h3>🔧 최근 부품 교체 이력</h3>
         {vehicle.parsedParts?.length > 0 ? (
           <ul>
-            {vehicle.parsedParts.map((item) => (
-              <li key={`${item.partName}-${item.replacedAt}`}>
-                {item.partName} ({item.replacedAt})
+            {vehicle.parsedParts.map((item, idx) => (
+              <li key={`${item.partName || 'unknown'}-${item.replacedAt || 'unknown'}-${idx}`}>
+                {item.partName || '알 수 없음'} ({item.replacedAt || '날짜 없음'})
               </li>
             ))}
+
           </ul>
         ) : (
           <p>부품 이력이 없습니다.</p>
@@ -206,11 +207,12 @@ function MyPage() {
         <h3>💪 최근 점검 이력</h3>
         {vehicle.parsedHistory?.length > 0 ? (
           <ul>
-            {vehicle.parsedHistory.map((item) => (
-              <li key={`${item.label}-${item.performedAt}`}>
-                {item.label} ({item.performedAt})
+            {vehicle.parsedHistory.map((item, idx) => (
+              <li key={`${item.label || 'unknown'}-${item.performedAt || 'unknown'}-${idx}`}>
+                {item.label || '알 수 없음'} ({item.performedAt || '날짜 없음'})
               </li>
             ))}
+
           </ul>
         ) : (
           <p>점검 이력이 없습니다.</p>
