@@ -46,6 +46,17 @@ function Signup({ setUser }) {
   };
 
   const handleVerifyCode = async () => {
+    // 🔍 입력값 사전 검사
+    if (!carNumber || !nickname || !vehicleType) {
+      alert('차량번호, 닉네임, 차종을 모두 입력해주세요.');
+      return;
+    }
+
+    if (!inputCode) {
+      alert('인증번호를 입력해주세요.');
+      return;
+    }
+
     try {
       console.log('📤 백엔드로 전송되는 값:', {
         phone_number: phoneNumber,
@@ -77,8 +88,11 @@ function Signup({ setUser }) {
       alert('✅ 인증 완료! 회원가입 성공!');
       navigate('/');
     } catch (err) {
-      console.error('❌ 인증 실패 또는 회원가입 오류:', err);
-      alert('회원가입 중 문제가 발생했습니다.');
+      console.error('❌ 인증 실패 또는 회원가입 오류:', err.response?.data || err);
+      alert(
+        err.response?.data?.message ||
+        '회원가입 중 문제가 발생했습니다.'
+      );
     }
   };
 
