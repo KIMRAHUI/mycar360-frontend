@@ -1,10 +1,27 @@
-/* src/styles/footer.css */
-
 .footer {
-  padding: 1rem;
   background-color: #f4f4f4;
-  margin-top: 2rem;
-  text-align: center;
+  padding: 1.5rem 1rem;
   font-size: 0.9rem;
-  color: #333;
+  color: #444;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.footer-row span {
+  white-space: nowrap;
+}
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: #888;
 }

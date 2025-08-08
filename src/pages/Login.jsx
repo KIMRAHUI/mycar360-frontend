@@ -53,7 +53,7 @@ function Login({ setUser }) {
       localStorage.setItem('token', token);
       setUser(user);
 
-      alert("😎 로그인 완료! 내 차 관리, 이제부터 함께해요~ 🛠️🚗");
+      alert("😎 로그인 완료! 내 차 관리, 이제부터 함께해요~");
       navigate('/');
     } catch (err) {
       if (err.response?.status === 404) {
@@ -71,7 +71,7 @@ function Login({ setUser }) {
 
       <select value={telco} onChange={e => setTelco(e.target.value)}>
         <option value="">통신사 선택</option>
-        <option value="SKT">SKT</option>
+        <option value="SKT">SKT(기본선택)</option>
         <option value="KT">KT</option>
         <option value="LGU+">LG U+</option>
       </select>
