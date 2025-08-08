@@ -1,105 +1,89 @@
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 5rem;
   background-color: #f9f6f1;
   color: #333;
-  position: relative;
   border-bottom: 2px solid #ddd;
   font-family: 'Pretendard', sans-serif;
   z-index: 1000;
 }
 
-.logo {
-  font-size: 1.6rem;
-  font-weight: 700;
+
+.logo-img {
+  height: 65px;
+  object-fit: contain;
   cursor: pointer;
-  color: #4b3f2f;
 }
 
-.hamburger {
-  font-size: 2rem;
-  cursor: pointer;
-  color: #4b3f2f;
-}
 
-.side-menu {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 240px;
-  height: 100vh;
-  background-color: rgba(255, 253, 248, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-left: 2px solid #e2dcd5;
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 2rem 1.5rem;
+.nav-menu {
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  z-index: 2000;
-  animation: slideIn 0.3s ease forwards;
+  align-items: center;
+  gap: 1.5rem;
+  margin-right: 0.25rem;
+  flex-wrap: nowrap; 
 }
 
-.side-menu a,
-.side-menu button {
-  color: #4b3f2f;
+.nav-menu a,
+.nav-menu button {
   font-size: 1rem;
+  color: #4b3f2f;
   text-decoration: none;
   background: none;
   border: none;
   cursor: pointer;
-  text-align: left;
-  padding: 0.5rem 0;
+  font-weight: 500;
   transition: all 0.2s ease;
-  border-radius: 8px;
 }
 
-.side-menu a:hover,
-.side-menu button:hover {
-  background-color: #ffe5dc;
-  padding-left: 0.5rem;
+
+.auth-icon {
+  height: 28px;
+  width: 28px;
+  object-fit: contain;
+  vertical-align: middle;
 }
 
-/* ✅ greeting과 X 아이콘을 가로로 정렬 */
-.menu-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
 
-.greeting {
-  font-size: 1rem;
-  color: #4b3f2f;
-}
-
-.menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 1500;
-}
-
-.close-button {
-  font-size: 1.4rem;
+.icon-button {
   background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
-  color: #4b3f2f;
-  margin-left: 1rem; 
+  display: flex;
+  align-items: center;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
+
+.logout-btn {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: row;         
+    padding: 0.75rem 1rem;
   }
-  to {
-    transform: translateX(0);
+
+  .logo-img {
+    height: 48px;                
+  }
+
+  .nav-menu {
+    flex: 1;
+    justify-content: flex-end;   
+    gap: 1rem;
+    flex-wrap: nowrap;           /
+  }
+
+  .nav-menu a,
+  .nav-menu button {
+    font-size: 0.9rem;
   }
 }

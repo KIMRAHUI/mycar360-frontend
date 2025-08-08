@@ -10,10 +10,10 @@ export default function InspectionModal({ item, onClose }) {
     speed: 400,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,            // ✅ 자동 전환 활성화
-    autoplaySpeed: 2000,       // ✅ 3초마다 전환
-    arrows: true,              // ✅ 화살표 버튼 활성화 (기본값이지만 명시적으로 유지)
-    pauseOnHover: true,        // 마우스 올리면 멈춤
+    autoplay: true,            
+    autoplaySpeed: 2000,      
+    arrows: true,             
+    pauseOnHover: true,       
   };
 
   return (

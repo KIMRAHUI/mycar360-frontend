@@ -165,7 +165,7 @@ function Home() {
       <ProductIconSlider />
 
       <section className="recommendations">
-        <h3>🔧 추천 점검 항목</h3>
+        <h3>추천 점검 항목</h3>
         <div className="recommendation-cards">
           {recommendations.map((item, index) => (
             <div
@@ -200,10 +200,10 @@ function Home() {
           <h3>고객센터 안내</h3>
 
           <div className="support-info">
-            <p><strong>📧 이메일:</strong> support@mycar360.co.kr</p>
-            <p><strong>☎ 전화번호:</strong> 1588-1234</p>
-            <p><strong>🕐 운영시간:</strong> 평일 09:00 ~ 18:00 <br/>(주말/공휴일 휴무)</p>
-            <p><strong>🏢 회사 주소:</strong> 서울특별시 강남구 테헤란로 123</p>
+            <p><strong>이메일:</strong> support@mycar360.co.kr</p>
+            <p><strong>전화번호:</strong> 1588-1234</p>
+            <p><strong>운영시간:</strong> 평일 09:00 ~ 18:00 <br/>(주말/공휴일 휴무)</p>
+            <p><strong>회사 주소:</strong> 서울특별시 강남구 테헤란로 123</p>
           </div>
 
           <ul className="faq-list">
