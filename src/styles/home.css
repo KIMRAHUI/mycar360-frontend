@@ -189,15 +189,10 @@
 .support-section {
   margin-top: 4rem;
   padding: 0 1rem 4rem;
+  display: flex;            
+  justify-content: center;  
 }
 
-.support-info {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  color: #444;
-  line-height: 1.7;
-  text-align: center;
-}
 
 .support-card {
   background-color: #ffffff;
@@ -205,8 +200,9 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   max-width: 600px;
+  width: 100%;
+  text-align: center; 
   margin: 0 auto;
-  text-align: left;
 }
 
 .support-card h3 {
@@ -214,10 +210,10 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: #222;
-  border-left: none;
+  text-align: center; 
+    border-left: none;     
   padding-left: 0;
 }
-
 .support-card ul {
   list-style: none;
   padding: 0;
@@ -294,7 +290,7 @@
   text-align: center;
 }
 
-/* 📌 추가: 부릉부릉 애니메이션 */
+/*: 부릉부릉 애니메이션 */
 .scroll-car {
   position: fixed;
   left: -100px;
