@@ -1,4 +1,4 @@
-// 전체 MyPage.jsx (주석 추가 완료)
+// 전체 MyPage.jsx (정규화+정렬+날짜포맷 반영)
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AutoShopMap from '../components/AutoShopMap';
@@ -17,13 +17,60 @@ function MyPage() {
   const [reservations, setReservations] = useState([]); // 예약 목록
   const [favorites, setFavorites] = useState([]); // 찜 항목 목록
   const [userAddress, setUserAddress] = useState(''); // 사용자 주소
- 
+
+  // ---------- 유틸: 안전 파싱/정렬/정규화 ----------
+  const safeParseArray = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const toTime = (v) => (v ? new Date(v).getTime() : 0);
+
+  // ---------- 날짜 포맷 유틸 ----------
+  const formatDate = (value) => {
+    if (!value) return '날짜 없음';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) {
+      if (typeof value === 'string' && value.length >= 10) {
+        const ymd = value.slice(0, 10); // 2024-06-03
+        return ymd.replaceAll('-', '. '); // 2024. 06. 03
+      }
+      return '날짜 없음';
+    }
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}. ${mm}. ${dd}`;
+  };
+
+  const normalizeParts = (arr) =>
+    arr
+      .map((p) => ({
+        partName: p?.partName ?? p?.name ?? p?.title ?? '알 수 없음',
+        replacedAt: p?.replacedAt ?? p?.date ?? p?.replaced_at ?? null,
+      }))
+      .sort((a, b) => toTime(b.replacedAt) - toTime(a.replacedAt));
+
+  const normalizeHistory = (arr) =>
+    arr
+      .map((h) => ({
+        label: h?.label ?? h?.inspection_type ?? '알 수 없음',
+        performedAt: h?.performedAt ?? h?.date ?? null,
+      }))
+      .sort((a, b) => toTime(b.performedAt) - toTime(a.performedAt));
+
   // 찜 항목 삭제 처리
   const handleDeleteFavorite = async (inspectionItemId) => {
     try {
       const res = await axios.delete(`/api/favorites/${user.id}/${inspectionItemId}`);
       if (res.status === 200) {
-        const updated = favorites.filter(f => f.id !== inspectionItemId);
+        const updated = favorites.filter((f) => f.id !== inspectionItemId);
         setFavorites(updated);
       }
     } catch (err) {
@@ -57,8 +104,6 @@ function MyPage() {
     }
   };
 
-
-
   // 예약 목록 로드
   useEffect(() => {
     const stored = localStorage.getItem('myReservations');
@@ -81,22 +126,26 @@ function MyPage() {
       alert('로그인 후 이용해주세요!');
       navigate('/login');
     }
+    // location 변경 시마다 새로고침 유지
   }, [location]);
 
-  // 차량 정보 로드
+  // 차량 정보 로드 (정규화 + 정렬 + 상위 3개)
   const fetchVehicleInfo = async (carNumber) => {
     try {
       const res = await axios.get(`/api/vehicle-info/${carNumber}`);
-      if (!res.data) return;
+    if (!res.data) return;
 
       const data = res.data;
-      const parts = typeof data.parts === 'string' ? JSON.parse(data.parts) : data.parts || [];
-      const history = typeof data.history === 'string' ? JSON.parse(data.history) : data.history || [];
+      const rawParts = safeParseArray(data.parts);
+      const rawHistory = safeParseArray(data.history);
+
+      const parsedParts = normalizeParts(rawParts).slice(0, 3); // 최근 부품 3개
+      const parsedHistory = normalizeHistory(rawHistory).slice(0, 3); // 최근 점검 이력 3개
 
       setVehicle({
         ...data,
-        parsedParts: parts.slice(0, 3), // 최근 부품 3개
-        parsedHistory: history.slice(0, 3), // 최근 점검 이력 3개
+        parsedParts,
+        parsedHistory,
       });
     } catch (err) {
       console.error('❌ 차량 정보 로딩 실패:', err);
@@ -126,7 +175,7 @@ function MyPage() {
         nickname: nicknameInput,
       });
 
-      if (res.data.success) {
+      if (res.data?.success) {
         alert('닉네임이 성공적으로 변경되었습니다!');
       } else {
         alert('닉네임 변경은 저장되었으나 응답에 문제가 있습니다.');
@@ -155,7 +204,9 @@ function MyPage() {
     setReservations([...reservations, newEntry]);
     setReservationDate('');
     setReservationShop('');
-    alert('예약이 완료되었습니다.\n해당 정비소에서 순차적으로 연락드릴 예정이며,\n정비소 사정에 따라 일정이 변동될 수 있습니다.');
+    alert(
+      '예약이 완료되었습니다.\n해당 정비소에서 순차적으로 연락드릴 예정이며,\n정비소 사정에 따라 일정이 변동될 수 있습니다.'
+    );
   };
 
   // 예약 삭제 처리
@@ -165,7 +216,6 @@ function MyPage() {
     setReservations(newList);
     localStorage.setItem('myReservations', JSON.stringify(newList)); // ✅ localStorage 동기화
   };
-
 
   // 렌더링 조건
   if (!user || !vehicle) return null;
@@ -192,10 +242,9 @@ function MyPage() {
           <ul>
             {vehicle.parsedParts.map((item, idx) => (
               <li key={`${item.partName || 'unknown'}-${item.replacedAt || 'unknown'}-${idx}`}>
-                {item.partName || '알 수 없음'} ({item.replacedAt || '날짜 없음'})
+                {item.partName || '알 수 없음'} ({formatDate(item.replacedAt)})
               </li>
             ))}
-
           </ul>
         ) : (
           <p>부품 이력이 없습니다.</p>
@@ -209,10 +258,9 @@ function MyPage() {
           <ul>
             {vehicle.parsedHistory.map((item, idx) => (
               <li key={`${item.label || 'unknown'}-${item.performedAt || 'unknown'}-${idx}`}>
-                {item.label || '알 수 없음'} ({item.performedAt || '날짜 없음'})
+                {item.label || '알 수 없음'} ({formatDate(item.performedAt)})
               </li>
             ))}
-
           </ul>
         ) : (
           <p>점검 이력이 없습니다.</p>
@@ -221,23 +269,23 @@ function MyPage() {
 
       <section className="next-inspections">
         <h3>💡 다음 점검 예상 시기</h3>
-  {nextInspections.length > 0 ? (
-    <ul>
-      {nextInspections.map((item, idx) => (
-        <li key={`${item.title}-${idx}`}>
-          <strong>{item.title}</strong>
-          {' '}→ 마지막: {item.last_date || '―'}, 주기: {item.recommended_cycle || '―'}
-          {item.next_date && <> , <b>다음: {item.next_date}</b></>}
-          {!item.next_date && item.next_date_min && item.next_date_max && (
-            <> , <b>다음: {item.next_date_min} ~ {item.next_date_max}</b></>
-          )}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>예상 정보를 불러오는 중이거나, 점검 이력이 없습니다.</p>
-  )}
-</section>
+        {nextInspections.length > 0 ? (
+          <ul>
+            {nextInspections.map((item, idx) => (
+              <li key={`${item.title}-${idx}`}>
+                <strong>{item.title}</strong>
+                {' '}→ 마지막: {item.last_date ? formatDate(item.last_date) : '―'}, 주기: {item.recommended_cycle || '―'}
+                {item.next_date && <> , <b>다음: {formatDate(item.next_date)}</b></>}
+                {!item.next_date && item.next_date_min && item.next_date_max && (
+                  <> , <b>다음: {formatDate(item.next_date_min)} ~ {formatDate(item.next_date_max)}</b></>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>예상 정보를 불러오는 중이거나, 점검 이력이 없습니다.</p>
+        )}
+      </section>
 
       {/* 정비소 지도 및 예약 */}
       <section>
@@ -286,7 +334,6 @@ function MyPage() {
       </section>
 
       {/* 찜한 점검 항목 */}
-      {/* 찜한 점검 항목 */}
       <section>
         <h3>❤️ 찜한 점검 항목</h3>
         {favorites.length > 0 ? (
@@ -311,10 +358,9 @@ function MyPage() {
             ))}
           </div>
         ) : (
-          <p>찜한 항목이 없습니다.</p>
+          <p>찜한 항목이 없습니다。</p>
         )}
       </section>
-
 
       {/* 닉네임 및 로그아웃 */}
       <section className="settings">
