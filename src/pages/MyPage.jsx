@@ -17,7 +17,7 @@ function MyPage() {
   const [reservations, setReservations] = useState([]); // 예약 목록
   const [favorites, setFavorites] = useState([]); // 찜 항목 목록
   const [userAddress, setUserAddress] = useState(''); // 사용자 주소
-
+ 
   // 찜 항목 삭제 처리
   const handleDeleteFavorite = async (inspectionItemId) => {
     try {
@@ -219,21 +219,24 @@ function MyPage() {
         )}
       </section>
 
-      {/* 다음 점검 예측 */}
-      <section>
-        <h3>💡 다음 점검 예상 시기</h3>
-        {nextInspections.length > 0 ? (
-          <ul>
-            {nextInspections.map((item, idx) => (
-              <li key={`${item.title}-${idx}`}>
-                <strong>{item.title}</strong> → 마지막 점검: {item.last_date}, 주기: {item.recommended_cycle}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>예상 정보를 불러오는 중이거나, 점검 이력이 없습니다.</p>
-        )}
-      </section>
+      <section className="next-inspections">
+  {nextInspections.length > 0 ? (
+    <ul>
+      {nextInspections.map((item, idx) => (
+        <li key={`${item.title}-${idx}`}>
+          <strong>{item.title}</strong>
+          {' '}→ 마지막: {item.last_date || '―'}, 주기: {item.recommended_cycle || '―'}
+          {item.next_date && <> , <b>다음: {item.next_date}</b></>}
+          {!item.next_date && item.next_date_min && item.next_date_max && (
+            <> , <b>다음: {item.next_date_min} ~ {item.next_date_max}</b></>
+          )}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>예상 정보를 불러오는 중이거나, 점검 이력이 없습니다.</p>
+  )}
+</section>
 
       {/* 정비소 지도 및 예약 */}
       <section>
