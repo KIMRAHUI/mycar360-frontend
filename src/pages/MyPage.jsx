@@ -220,6 +220,7 @@ function MyPage() {
       </section>
 
       <section className="next-inspections">
+        <h3>💡 다음 점검 예상 시기</h3>
   {nextInspections.length > 0 ? (
     <ul>
       {nextInspections.map((item, idx) => (
